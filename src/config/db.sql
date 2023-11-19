@@ -19,66 +19,6 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `foody`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `anh`
---
-
-CREATE TABLE `anh` (
-  `idAnh` int(11) NOT NULL,
-  `url` varchar(255) DEFAULT NULL,
-  `idMonAn` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `giohang`
---
-
-CREATE TABLE `giohang` (
-  `idGioHang` int(11) NOT NULL,
-  `soLuong` int(11) NOT NULL,
-  `idMonAn` int(11) NOT NULL,
-  `idNguoiDung` int(11) NOT NULL,
-  `trangThai` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `hoadon`
---
-
-CREATE TABLE `hoadon` (
-  `idHoaDon` varchar(255) NOT NULL,
-  `ngayDat` date NOT NULL,
-  `diaChi` varchar(255) DEFAULT NULL,
-  `trangThai` int(11) NOT NULL,
-  `tongTienHoaDon` int(11) NOT NULL,
-  `comment` varchar(255) DEFAULT NULL,
-  `idNguoiDung` int(11) NOT NULL,
-  `idGioHang` int(11) NOT NULL,
-  `phuongThucTT` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `monan`
---
-
-CREATE TABLE `monan` (
-  `idMonAn` int(11) NOT NULL,
-  `ten` varchar(255) NOT NULL,
-  `giaGoc` int(11) NOT NULL,
-  `giaBan` int(11) NOT NULL,
-  `giaGiam` int(11) DEFAULT NULL,
-  `idTheLoai` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -87,7 +27,7 @@ CREATE TABLE `monan` (
 --
 
 CREATE TABLE `nguoidung` (
-  `idNguoiDung` int(11) NOT NULL,
+  `idNguoiDung` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `matKhau` varchar(255) NOT NULL,
   `hoTen` varchar(255) DEFAULT NULL,
@@ -95,164 +35,90 @@ CREATE TABLE `nguoidung` (
   `anh` varchar(255) DEFAULT NULL,
   `diaChi` varchar(255) DEFAULT NULL,
   `role` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rating`
---
-
-CREATE TABLE `rating` (
-  `idRating` int(11) NOT NULL,
-  `moTa` varchar(255) NOT NULL,
-  `idMonAn` int(11) NOT NULL,
-  `idNguoiDung` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
+) 
 
 --
 -- Table structure for table `theloai`
 --
 
 CREATE TABLE `theloai` (
-  `idTheLoai` int(11) NOT NULL,
+  `idTheLoai` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `tenTheLoai` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+)
 
 --
--- Indexes for dumped tables
+-- Table structure for table `monan`
 --
 
---
--- Indexes for table `anh`
---
-ALTER TABLE `anh`
-  ADD PRIMARY KEY (`idAnh`),
-  ADD KEY `idMonAn` (`idMonAn`);
+CREATE TABLE `monan` (
+  `idMonAn` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `anh` longtext DEFAULT NULL,
+  `ten` varchar(255) NOT NULL,
+  `giaGoc` int(11) NOT NULL,
+  `giaBan` int(11) NOT NULL,
+  `giaGiam` int(11) DEFAULT NULL,
+  `idTheLoai` int(11) NOT NULL
+  FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`);
+)
 
 --
--- Indexes for table `giohang`
---
-ALTER TABLE `giohang`
-  ADD PRIMARY KEY (`idGioHang`),
-  ADD KEY `idNguoiDung` (`idNguoiDung`),
-  ADD KEY `idMonAn` (`idMonAn`);
-
---
--- Indexes for table `hoadon`
---
-ALTER TABLE `hoadon`
-  ADD PRIMARY KEY (`idHoaDon`),
-  ADD KEY `idGioHang` (`idGioHang`),
-  ADD KEY `idNguoiDung` (`idNguoiDung`);
-
---
--- Indexes for table `monan`
---
-ALTER TABLE `monan`
-  ADD PRIMARY KEY (`idMonAn`),
-  ADD KEY `idTheLoai` (`idTheLoai`);
-
---
--- Indexes for table `nguoidung`
---
-ALTER TABLE `nguoidung`
-  ADD PRIMARY KEY (`idNguoiDung`);
-
---
--- Indexes for table `rating`
---
-ALTER TABLE `rating`
-  ADD PRIMARY KEY (`idRating`),
-  ADD KEY `idNguoiDung` (`idNguoiDung`),
-  ADD KEY `idMonAn` (`idMonAn`);
-
---
--- Indexes for table `theloai`
---
-ALTER TABLE `theloai`
-  ADD PRIMARY KEY (`idTheLoai`);
-
---
--- AUTO_INCREMENT for dumped tables
+-- Table structure for table `rating`
 --
 
---
--- AUTO_INCREMENT for table `anh`
---
-ALTER TABLE `anh`
-  MODIFY `idAnh` int(11) NOT NULL AUTO_INCREMENT;
+CREATE TABLE `rating` (
+  `idRating` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `SoSao` int NOT NULL,
+  `moTa` varchar(255) NOT NULL,
+  `idMonAn` int(11) NOT NULL,
+  FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`)
+) 
+
+
+CREATE TABLE `giohang` (
+  `idGioHang` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `soLuong` int(11) NOT NULL,
+  `idMonAn` int(11) NOT NULL,
+  `idNguoiDung` int(11) NOT NULL,
+  `trangThai` int(11) NOT NULL,
+  FOREIGN KEY (`idNguoiDung`) REFERENCES `nguoidung` (`idNguoiDung`),
+  FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`);
+)
+
+-- --------------------------------------------------------
 
 --
--- AUTO_INCREMENT for table `giohang`
---
-ALTER TABLE `giohang`
-  MODIFY `idGioHang` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `monan`
---
-ALTER TABLE `monan`
-  MODIFY `idMonAn` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `nguoidung`
---
-ALTER TABLE `nguoidung`
-  MODIFY `idNguoiDung` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `rating`
---
-ALTER TABLE `rating`
-  MODIFY `idRating` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `theloai`
---
-ALTER TABLE `theloai`
-  MODIFY `idTheLoai` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
+-- Table structure for table `hoadon`
 --
 
---
--- Constraints for table `anh`
---
-ALTER TABLE `anh`
-  ADD CONSTRAINT `anh_ibfk_1` FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`);
+CREATE TABLE `hoadon` (
+  `idHoaDon` varchar(255) NOT NULL PRIMARY KEY,
+  `ngayDat` date NOT NULL,
+  `diaChi` varchar(255) DEFAULT NULL,
+  `trangThai` int(11) NOT NULL,
+  `tongTienHoaDon` int(11) NOT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `idNguoiDung` int(11) NOT NULL,
+  `idGioHang` int(11) NOT NULL,
+  `phuongThucTT` varchar(255) NOT NULL,
+  FOREIGN KEY (`idGioHang`) REFERENCES `giohang` (`idGioHang`),
+  FOREIGN KEY (`idNguoiDung`) REFERENCES `nguoidung` (`idNguoiDung`)
+) 
+ /* thêm dữ liệu vào bảng người dùng*/
+ insert into nguoiDung (email, matKhau, role) 
+ values ('admin@example.com','123','admin'),
+ ('user@example.com','123','user');
 
---
--- Constraints for table `giohang`
---
-ALTER TABLE `giohang`
-  ADD CONSTRAINT `giohang_ibfk_1` FOREIGN KEY (`idNguoiDung`) REFERENCES `nguoidung` (`idNguoiDung`),
-  ADD CONSTRAINT `giohang_ibfk_2` FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`);
+  /* thêm dữ liệu vào bảng thể loại*/
+ insert into theloai (tenTheLoai)
+ values ('Bánh mì'),('Cơm tấm'),('Món chính');
 
---
--- Constraints for table `hoadon`
---
-ALTER TABLE `hoadon`
-  ADD CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`idGioHang`) REFERENCES `giohang` (`idGioHang`),
-  ADD CONSTRAINT `hoadon_ibfk_2` FOREIGN KEY (`idNguoiDung`) REFERENCES `nguoidung` (`idNguoiDung`);
-
---
--- Constraints for table `monan`
---
-ALTER TABLE `monan`
-  ADD CONSTRAINT `monan_ibfk_1` FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`);
-
---
--- Constraints for table `rating`
---
-ALTER TABLE `rating`
-  ADD CONSTRAINT `rating_ibfk_1` FOREIGN KEY (`idNguoiDung`) REFERENCES `nguoidung` (`idNguoiDung`),
-  ADD CONSTRAINT `rating_ibfk_2` FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+ /* thêm dữ liệu vào bảng món ăn*/
+ insert into monan (ten, giaBan, idTheLoai)
+ values ('Bánh mì thịt char', 15000, 1),
+ ('Bánh mì cá sẵn', 18000, 1),
+ ('Bánh mì bò', 17000, 1),
+ ('Bánh mì trứng', 16000, 1),
+ ('Bánh mì kem', 19000, 1),
+ ('Bánh mì xôi', 14000, 1),
+ ('Cơm tấm bó', 15000, 2),
+ ('Cơm tấm cá', 16000, 2)
