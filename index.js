@@ -3,7 +3,7 @@ const app = express();
 import "dotenv/config";
 import initRouter from "./src/service/initRouter";
 
-const port = process.env.PORT;
+const port = process.env.GET;
 
 initRouter(app);
 
