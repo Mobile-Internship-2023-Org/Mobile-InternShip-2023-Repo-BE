@@ -1,8 +1,14 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+
 const userController = require("../controller/uercontroller");
 import MonAnController from "../controller/MonAnController";
 import Nhahangcontroller from "../controller/Nhahangcontroller";
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
 
@@ -21,7 +27,11 @@ const initRouter = (app) => {
   // thêm nhà hàng
   router.post("/addNhahang", Nhahangcontroller.addNhahang);
   // update nhà hàng
-  router.put("/updateNhahang", Nhahangcontroller.updateNhahang);
+  router.put(
+    "/updateNhahang",
+    upload.single("anh"),
+    Nhahangcontroller.updateNhahang
+  );
 
   return app.use("/", router);
 };
