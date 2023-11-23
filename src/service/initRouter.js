@@ -18,7 +18,7 @@ const initRouter = (app) => {
   //thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
   //Lấy thông tin món ăn
-  router.get("/getInfor",GioHangController.getInfor);
+  router.get("/getInfor", GioHangController.getInfor);
 
   return app.use("/", router);
 };
