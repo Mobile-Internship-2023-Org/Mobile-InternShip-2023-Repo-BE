@@ -11,7 +11,6 @@ const upload = multer({ storage: storage });
 
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
-
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
   //lấy món ăn theo thể loại
@@ -22,6 +21,7 @@ const initRouter = (app) => {
   router.get("/rating", MonAnController.getRating);
   //thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+
   // Lấy thông tin nhà hàng
   router.get("/nhahang", Nhahangcontroller.getNhahang);
   // thêm nhà hàng
