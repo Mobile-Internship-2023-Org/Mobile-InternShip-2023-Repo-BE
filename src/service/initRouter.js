@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controller/uercontroller");
 import MonAnController from "../controller/MonAnController";
+import GioHangController from '../controller/GioHangController'
 
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
@@ -16,6 +17,8 @@ const initRouter = (app) => {
   router.get("/rating", MonAnController.getRating);
   //thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  //Lấy thông tin món ăn
+  router.get("/getInfor",GioHangController.getInfor);
 
   return app.use("/", router);
 };
