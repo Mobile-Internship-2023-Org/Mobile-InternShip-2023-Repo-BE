@@ -4,7 +4,7 @@ import "dotenv/config";
 import initRouter from "./src/service/initRouter";
 const bodyParser = require("body-parser");
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
