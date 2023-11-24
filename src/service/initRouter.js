@@ -32,6 +32,7 @@ const initRouter = (app) => {
   router.get("/rating", MonAnController.getRating);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+
   // Lấy thông tin món ăn
   router.get("/getInfor",GioHangController.getInfor);
 
