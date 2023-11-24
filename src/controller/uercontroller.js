@@ -7,6 +7,11 @@ const getUser = (req, res) => {
   });
 };
 
+// const portLogIn = (req,res) => {
+//   const username = req.params.username;
+//   const password = req.params.password;
+// }
+
 module.exports = {
   getUser,
 };

@@ -70,7 +70,6 @@ CREATE TABLE `rating` (
   `SoSao` int NOT NULL,
   `moTa` varchar(255) NOT NULL,
   `idMonAn` int(11) NOT NULL,
-  FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`)
 ) 
 
 
