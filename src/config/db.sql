@@ -73,11 +73,10 @@ CREATE TABLE `monan` (
   `idMonAn` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `anh` longtext DEFAULT NULL,
   `ten` varchar(255) NOT NULL,
-  `giaGoc` int(11) NOT NULL,
   `giaBan` int(11) NOT NULL,
   `giaGiam` int(11) DEFAULT NULL,
-  `idTheLoai` int(11) NOT NULL
-  FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`);
+  `idTheLoai` int(11) NOT NULL,
+  FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`)
 )
 
 --
