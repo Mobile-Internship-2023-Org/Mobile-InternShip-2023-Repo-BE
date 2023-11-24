@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const port = process.env.PORT;
 const serverURL = `http://localhost:${port}`;
 
+const port = process.env.PORT || 3000;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
