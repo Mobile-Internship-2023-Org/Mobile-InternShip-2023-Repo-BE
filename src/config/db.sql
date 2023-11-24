@@ -87,6 +87,7 @@ CREATE TABLE `rating` (
   `idRating` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `SoSao` int NOT NULL,
   `moTa` varchar(255) NOT NULL
+
 ) 
 
 
@@ -138,7 +139,6 @@ CREATE TABLE `hoadon` (
  ('Bánh mì xôi', 14000, 1),
  ('Cơm tấm bó', 15000, 2),
  ('Cơm tấm cá', 16000, 2)
-<<<<<<< Updated upstream
 
  CREATE TABLE `nhaHang` (
   `anh` longtext NOT NULL,
@@ -147,5 +147,4 @@ CREATE TABLE `hoadon` (
   `fanPage` varchar(255) DEFAULT NULL,
   `diaChi` varchar(255) DEFAULT NULL, 
 ) 
-=======
->>>>>>> Stashed changes
+
