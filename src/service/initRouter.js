@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controller/uercontroller");
 import MonAnController from "../controller/MonAnController";
+import ChangeInfoController from "../controller/ChangeInfoController";
 import Nhahangcontroller from "../controller/Nhahangcontroller";
 import Login from "../controller/Login";
 //import Register from "../controller/Register";
@@ -34,6 +35,17 @@ const initRouter = (app) => {
   router.post("/login", Login.postLogIn);
   //Rgister
   //router.post("/register", Register.postRegister);
+
+  // lấy tất cả thông tin người dùng
+  router.get("/nguoidung", ChangeInfoController.getAllInfoUser);
+  // lấy dữ liệu người dùng theo email
+  router.get("/:email", ChangeInfoController.getUserByEmail);
+  // cập nhật người dùng theo email
+  router.get("/updateUser", ChangeInfoController.updateUserByEmail);
+
+
+
+
 
   return app.use("/", router);
 };
