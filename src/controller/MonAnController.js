@@ -128,7 +128,7 @@ const getFoodById = (req, res) => {
 const getFoodByType = (req, res) => {
   console.log("get type");
   let query = `SELECT a.*, b.tenTheLoai FROM monAn a JOIN theLoai b ON a.idTheLoai=b.idTheLoai
-    WHERE b.tenTheLoai LIKE '%${req.params.type}%'`;
+    WHERE b.idTheLoai LIKE '%${req.params.type}%' and a.idMonAn NOT IN ('%${req.params.id}%')`;
   connection.query(query, (err, result) => {
     if (err) throw err;
     return res.send(result);
@@ -147,12 +147,30 @@ const getRating = (req, res) => {
 
 // thêm món ăn vào giỏ hàng
 const addToCart = (req, res) => {
-  //console.log("add to cart");
-  let query = `INSERT INTO gioHang VALUES(?)`;
-  const params = req.body.cartItem;
-  connection.query(query, params, (err, result) => {
+  console.log(req.body);
+  const { idMonAn, idNguoiDung, soLuong, trangThai } = req.body;
+  let query = `INSERT INTO gioHang (soLuong, idMonAn, idNguoiDung, trangThai) VALUES(?,?,?,?)`;
+  let queryCheck =
+    "select * from giohang where idMonAn = ? and idNguoiDung = ? and trangThai = 1";
+  let queryUpdate =
+    "update gioHang set soLuong = soLuong + ? where idMonAn = ?";
+  connection.execute(queryCheck, [idMonAn, idNguoiDung], (err, result) => {
     if (err) throw err;
-    return res.status(201).end();
+    if (result.affectedRows == 0) {
+      connection.query(
+        query,
+        [soLuong, idMonAn, idNguoiDung, trangThai],
+        (err, result) => {
+          if (err) throw err;
+          return res.status(200).end();
+        }
+      );
+    } else {
+      connection.execute(queryUpdate, [soLuong, idMonAn], (err, result) => {
+        if (err) throw err;
+        return res.status(200).end();
+      });
+    }
   });
 };
 

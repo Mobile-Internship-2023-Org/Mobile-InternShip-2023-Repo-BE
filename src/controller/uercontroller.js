@@ -7,6 +7,20 @@ const getUser = (req, res) => {
   });
 };
 
+const getUserByEmail = (req, res) => {
+  const email = req.params.email;
+  conection.execute(
+    "select * from nguoiDung where email = ?",
+    [email],
+    (err, result) => {
+      if (err) throw err;
+      console.log(result);
+      res.status(200).send(result[0]);
+    }
+  );
+};
+
 module.exports = {
   getUser,
+  getUserByEmail,
 };
