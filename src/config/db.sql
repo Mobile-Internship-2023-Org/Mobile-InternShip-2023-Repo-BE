@@ -21,6 +21,25 @@ SET time_zone = "+00:00";
 -- Database: `foody`
 
 -- --------------------------------------------------------
+--
+-- Cấu trúc bảng cho bảng `admin`
+--
+
+CREATE TABLE `admin` (
+  `idAdmin` int(11) NOT NULL,
+  `tenAdmin` varchar(255) NOT NULL,
+  `urlAnh` varchar(255) DEFAULT NULL,
+  `diaChi` varchar(255) NOT NULL,
+  `fanPage` varchar(255) DEFAULT NULL,
+  `SDT` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Chỉ mục cho bảng `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`idAdmin`);
+COMMIT;
 
 --
 -- Table structure for table `nguoidung`
@@ -54,11 +73,10 @@ CREATE TABLE `monan` (
   `idMonAn` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `anh` longtext DEFAULT NULL,
   `ten` varchar(255) NOT NULL,
-  `giaGoc` int(11) NOT NULL,
   `giaBan` int(11) NOT NULL,
   `giaGiam` int(11) DEFAULT NULL,
-  `idTheLoai` int(11) NOT NULL
-  FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`);
+  `idTheLoai` int(11) NOT NULL,
+  FOREIGN KEY (`idTheLoai`) REFERENCES `theloai` (`idTheLoai`)
 )
 
 --
@@ -68,9 +86,7 @@ CREATE TABLE `monan` (
 CREATE TABLE `rating` (
   `idRating` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `SoSao` int NOT NULL,
-  `moTa` varchar(255) NOT NULL,
-  `idMonAn` int(11) NOT NULL,
-  FOREIGN KEY (`idMonAn`) REFERENCES `monan` (`idMonAn`)
+  `moTa` varchar(255) NOT NULL
 ) 
 
 
@@ -122,3 +138,14 @@ CREATE TABLE `hoadon` (
  ('Bánh mì xôi', 14000, 1),
  ('Cơm tấm bó', 15000, 2),
  ('Cơm tấm cá', 16000, 2)
+<<<<<<< Updated upstream
+
+ CREATE TABLE `nhaHang` (
+  `anh` longtext NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `sdt` varchar(255) DEFAULT NULL,
+  `fanPage` varchar(255) DEFAULT NULL,
+  `diaChi` varchar(255) DEFAULT NULL, 
+) 
+=======
+>>>>>>> Stashed changes
