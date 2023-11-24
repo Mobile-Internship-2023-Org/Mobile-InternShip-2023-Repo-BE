@@ -28,7 +28,7 @@ const getFoodById = (req, res) => {
 const getFoodByType = (req, res) => {
   console.log("get type");
   let query = `SELECT a.*, b.tenTheLoai FROM monAn a JOIN theLoai b ON a.idTheLoai=b.idTheLoai
-    WHERE b.tenTheLoai LIKE '%${req.params.type}%'`;
+    WHERE b.tenTheLoai LIKE '%${req.params.type}%' NOT IN '%${req.params.id}%'`;
   connection.query(query, (err, result) => {
     if (err) throw err;
     return res.send(result);
