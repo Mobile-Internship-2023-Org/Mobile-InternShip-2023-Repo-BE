@@ -156,18 +156,21 @@ const addToCart = (req, res) => {
     "update gioHang set soLuong = soLuong + ? where idMonAn = ?";
   connection.execute(queryCheck, [idMonAn, idNguoiDung], (err, result) => {
     if (err) throw err;
-    if (result.affectedRows == 0) {
+    if (result.length == 0) {
       connection.query(
         query,
         [soLuong, idMonAn, idNguoiDung, trangThai],
         (err, result) => {
           if (err) throw err;
+          console.log("them thanh cong");
           return res.status(200).end();
         }
       );
     } else {
+      console.log(result);
       connection.execute(queryUpdate, [soLuong, idMonAn], (err, result) => {
         if (err) throw err;
+        console.log("cap nhat");
         return res.status(200).end();
       });
     }

@@ -4,7 +4,6 @@ import "dotenv/config";
 import initRouter from "./src/service/initRouter";
 const bodyParser = require("body-parser");
 
-const port = process.env.PORT;
 const serverURL = `http://localhost:${port}`;
 
 const port = process.env.PORT || 3000;
