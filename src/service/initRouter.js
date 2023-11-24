@@ -10,17 +10,24 @@ import GioHangController from '../controller/GioHangController'
 
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
+
+  // thêm món ăn mới
+  router.post("/addFood", MonAnController.addFood);
+  // cập nhật món ăn theo id
+  router.put("/updateFood/:id", MonAnController.updateFood);
+  // xóa món ăn theo id
+  router.delete("/deleteFood/:id", MonAnController.deleteFood);
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
   //lấy món ăn theo thể loại
   router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
   router.get("/monanId/:id", MonAnController.getFoodById);
-  //lấy đánh giá
+  // lấy đánh giá
   router.get("/rating", MonAnController.getRating);
-  //thêm món ăn vào giỏ hàng
+  // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
-  //Lấy thông tin món ăn
+  // Lấy thông tin món ăn
   router.get("/getInfor",GioHangController.getInfor);
 
   // Lấy thông tin nhà hàng
