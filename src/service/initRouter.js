@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 
 const userController = require("../controller/uercontroller");
+const hoadonController = require("../controller/hoaDonController");
 import MonAnController from "../controller/MonAnController";
 import ChangeInfoController from "../controller/ChangeInfoController";
 import Nhahangcontroller from "../controller/Nhahangcontroller";
@@ -59,6 +60,19 @@ const initRouter = (app) => {
   router.post("/login", Login.postLogIn);
   //Rgister
   //router.post("/register", Register.postRegister);
+
+  // Tạo hóa đơn mới
+  router.post("/createOrder", hoadonController.createOrder);
+  // Tính tổng tiền hóa đơn
+  router.post("/calculateTongTienHoaDon", hoadonController.calculateTongTienHoaDon);
+  // Add the new 'finalizeOrder' API route
+  router.post("/finalizeOrder", hoadonController.finalizeOrder);
+
+  router.get("/getOrderStatus/:idHoaDon", hoadonController.getOrderStatus);
+
+  router.put("/updateOrderStatus/:idHoaDon", hoadonController.updateOrderStatus);
+
+  router.get("/getTotalItems/:idHoaDon", hoadonController.getTotalItems);
 
   return app.use("/", router);
 };
