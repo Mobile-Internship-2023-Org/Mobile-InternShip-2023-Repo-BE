@@ -9,6 +9,7 @@ const MonAnController = require("../controller/MonAnController");
 const ChangeInfoController = require("../controller/ChangeInfoController");
 const Nhahangcontroller = require("../controller/Nhahangcontroller");
 const Login = require("../controller/Login");
+const register = require("../controller/Register");
 const GioHangController = require('../controller/GioHangController');
 
 const hoadonRoutes = require("../service/hoadonRoutes");
@@ -57,6 +58,11 @@ const initRouter = (app) => {
   router.get("/:email", ChangeInfoController.getUserByEmail);
   // cập nhật người dùng theo email
   router.get("/updateUser", ChangeInfoController.updateUserByEmail);
+
+  //Login
+  router.post("/login", Login.postLogIn);
+  //Rgister
+  router.post("/register", Register.postRegister);
 
   app.use("/hoadon", hoadonRoutes);
 
