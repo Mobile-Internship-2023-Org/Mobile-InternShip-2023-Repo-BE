@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 
 const userController = require("../controller/uercontroller");
+
 const hoadonController = require("../controller/hoadonController");
 const MonAnController = require("../controller/MonAnController");
 const ChangeInfoController = require("../controller/ChangeInfoController");
@@ -27,16 +28,17 @@ const initRouter = (app) => {
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
   //lấy món ăn theo thể loại
-  router.get("/monanType/:type", MonAnController.getFoodByType);
+  router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
   router.get("/monanId/:id", MonAnController.getFoodById);
   // lấy đánh giá
   router.get("/rating", MonAnController.getRating);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  router.get("/user/:email", userController.getUserByEmail);
 
   // Lấy thông tin món ăn
-  router.get("/getInfor",GioHangController.getInfor);
+  router.get("/getInfor", GioHangController.getInfor);
 
   // Lấy thông tin nhà hàng
   router.get("/nhahang", Nhahangcontroller.getNhahang);
@@ -57,6 +59,7 @@ const initRouter = (app) => {
   router.get("/updateUser", ChangeInfoController.updateUserByEmail);
 
   app.use("/hoadon", hoadonRoutes);
+
 
   return app.use("/", router);
 };
