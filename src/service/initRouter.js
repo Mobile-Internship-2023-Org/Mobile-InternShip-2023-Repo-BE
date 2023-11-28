@@ -8,7 +8,7 @@ import MonAnController from "../controller/MonAnController";
 import ChangeInfoController from "../controller/ChangeInfoController";
 import Nhahangcontroller from "../controller/Nhahangcontroller";
 import Login from "../controller/Login";
-//import Register from "../controller/Register";
+import Register from "../controller/Register";
 import GioHangController from "../controller/GioHangController";
 
 const storage = multer.memoryStorage();
@@ -59,7 +59,7 @@ const initRouter = (app) => {
   //Login
   router.post("/login", Login.postLogIn);
   //Rgister
-  //router.post("/register", Register.postRegister);
+  router.post("/register", Register.postRegister);
 
   // Tạo hóa đơn mới
   router.post("/createOrder", hoadonController.createOrder);
