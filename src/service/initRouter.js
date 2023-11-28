@@ -29,12 +29,12 @@ const initRouter = (app) => {
   router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
   router.get("/monanId/:id", MonAnController.getFoodById);
-  // lấy đánh giá
-  router.get("/rating", MonAnController.getRating);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  //lấy thông tin người dùng theo email
   router.get("/user/:email", userController.getUserByEmail);
-
+  //lấy toàn bộ đánh giá của người dùng
+  router.get("/rating", Nhahangcontroller.getRating);
   // Lấy thông tin món ăn
   router.get("/getInfor", GioHangController.getInfor);
 
@@ -64,13 +64,19 @@ const initRouter = (app) => {
   // Tạo hóa đơn mới
   router.post("/createOrder", hoadonController.createOrder);
   // Tính tổng tiền hóa đơn
-  router.post("/calculateTongTienHoaDon", hoadonController.calculateTongTienHoaDon);
+  router.post(
+    "/calculateTongTienHoaDon",
+    hoadonController.calculateTongTienHoaDon
+  );
   // Add the new 'finalizeOrder' API route
   router.post("/finalizeOrder", hoadonController.finalizeOrder);
 
   router.get("/getOrderStatus/:idHoaDon", hoadonController.getOrderStatus);
 
-  router.put("/updateOrderStatus/:idHoaDon", hoadonController.updateOrderStatus);
+  router.put(
+    "/updateOrderStatus/:idHoaDon",
+    hoadonController.updateOrderStatus
+  );
 
   router.get("/getTotalItems/:idHoaDon", hoadonController.getTotalItems);
 
