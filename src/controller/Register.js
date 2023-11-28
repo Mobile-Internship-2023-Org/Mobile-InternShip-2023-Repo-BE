@@ -1,4 +1,7 @@
-import connection from "../config/connecttion";
+
+
+const connection = require("../config/connecttion");
+const bcrypt = require("bcrypt");
 
 const postRegister = (req, res) => {
   console.log(req.body);
@@ -9,21 +12,51 @@ const postRegister = (req, res) => {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
-  // Thực hiện truy vấn SQL để chèn dữ liệu
+  // Kiểm tra email có bị trùng
   connection.query(
-    "INSERT INTO nguoiDung (email, matKhau, role) VALUES (?, ?, ?)",
-    [Email, Password, "user"],
-    (err, insertResults) => {
+    "SELECT COUNT(*) AS count FROM nguoiDung WHERE email = ?",
+    [Email],
+    (err, selectResults) => {
       if (err) {
-        console.error("Database insert error:", err);
+        console.error("Database select error:", err);
         return res.status(500).json({ message: "Internal Server Error" });
       }
 
-      // Kiểm tra xem dữ liệu đã được chèn thành công hay không
-      console.log("Insert results:", insertResults);
+      const count = selectResults[0].count;
 
-      // Xuất thông báo khi đăng ký thành công
-      res.json({ message: "Registration successful" });
+      // Kiểm tra xem email đã tồn tại hay chưa
+      if (count > 0) {
+        console.log("Email is already in use");
+        return res.status(400).json({ message: "Email is already in use" });
+      }
+
+      // Email không tồn tại, tiếp tục mã hóa mật khẩu và chèn dữ liệu vào cơ sở dữ liệu
+      bcrypt.hash(Password, 10, (err, hashedPassword) => {
+        if (err) {
+          console.error("Password hash error:", err);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
+        // In ra giá trị mật khẩu đã được mã hóa
+        console.log("Hashed password:", hashedPassword);
+
+        // Chèn dữ liệu vào cơ sở dữ liệu
+        connection.query(
+          "INSERT INTO nguoiDung (email, matKhau, role) VALUES (?, ?, ?)",
+          [Email, hashedPassword, "user"],
+          (err, insertResults) => {
+            if (err) {
+              console.error("Database insert error:", err);
+              return res.status(500).json({ message: "Internal Server Error" });
+            }
+
+            // Kiểm tra xem dữ liệu đã được chèn thành công hay không
+            console.log("Insert results:", insertResults);
+
+            // Xuất thông báo khi đăng ký thành công
+            res.json({ message: "Registration successful" });
+          }
+        );
+      });
     }
   );
 };
