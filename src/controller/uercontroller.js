@@ -7,6 +7,7 @@ const getUser = (req, res) => {
   });
 };
 
+
 const getUserByEmail = (req, res) => {
   const email = req.params.email;
   conection.execute(
@@ -19,6 +20,7 @@ const getUserByEmail = (req, res) => {
     }
   );
 };
+
 
 module.exports = {
   getUser,
