@@ -149,30 +149,21 @@ const getRating = (req, res) => {
 const addToCart = (req, res) => {
   console.log(req.body);
   const { idMonAn, idNguoiDung, soLuong, trangThai } = req.body;
-  let queryInsert = `INSERT INTO gioHang_monan (idGioHang, soLuong, idMonAn) VALUES(?,?,?)`;
-  let queryInsertGioHang = `INSERT INTO gioHang (idNguoiDung, trangThai) VALUES(?, ?)`;
+  let query = `INSERT INTO gioHang (soLuong, idMonAn, idNguoiDung, trangThai) VALUES(?,?,?,?)`;
   let queryCheck =
-    "select a.*, b.idNguoiDung from giohang_monan a join gioHang b where a.idMonAn = ? and b.idNguoiDung = ? and b.trangThai = 1";
+    "select * from giohang where idMonAn = ? and idNguoiDung = ? and trangThai = 1";
   let queryUpdate =
-    "update gioHang_monan set soLuong = soLuong + ? where idMonAn = ?";
+    "update gioHang set soLuong = soLuong + ? where idMonAn = ?";
   connection.execute(queryCheck, [idMonAn, idNguoiDung], (err, result) => {
     if (err) throw err;
     if (result.length == 0) {
       connection.query(
-        queryInsertGioHang,
-        [idNguoiDung, trangThai],
+        query,
+        [soLuong, idMonAn, idNguoiDung, trangThai],
         (err, result) => {
           if (err) throw err;
           console.log("them thanh cong");
-          let lastInsertedId = result.insertId;
-          connection.execute(
-            queryInsert,
-            [lastInsertedId, soLuong, idMonAn],
-            (err, result) => {
-              if (err) throw err;
-              return res.status(200).end();
-            }
-          );
+          return res.status(200).end();
         }
       );
     } else {
