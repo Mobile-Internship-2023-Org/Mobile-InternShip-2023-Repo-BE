@@ -9,7 +9,7 @@ const MonAnController = require("../controller/MonAnController");
 const ChangeInfoController = require("../controller/ChangeInfoController");
 const Nhahangcontroller = require("../controller/Nhahangcontroller");
 const Login = require("../controller/Login");
-const register = require("../controller/Register");
+const Register = require("../controller/Register");
 const GioHangController = require("../controller/GioHangController");
 
 const hoadonRoutes = require("../service/hoadonRoutes");
