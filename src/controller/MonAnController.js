@@ -135,16 +135,6 @@ const getFoodByType = (req, res) => {
   });
 };
 
-//lấy dữ liệu đánh giá
-const getRating = (req, res) => {
-  let query = `SELECT AVG(a.SoSaoo) as danhgia FROM rating a JOIN monAn
-    b ON a.idMonAn = b.id WHERE b.id = ${req.params.foodId}`;
-  connection.query(query, (err, result) => {
-    if (err) throw err;
-    return res.json({ rating: result });
-  });
-};
-
 // thêm món ăn vào giỏ hàng
 const addToCart = (req, res) => {
   console.log(req.body);
@@ -193,6 +183,5 @@ module.exports = {
   getAllFood,
   getFoodById,
   getFoodByType,
-  getRating,
   addToCart,
 };

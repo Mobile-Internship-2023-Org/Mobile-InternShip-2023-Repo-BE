@@ -37,9 +37,20 @@ const updateNhahang = (req, res) => {
     return res.status(200).send("Data updated successfully");
   });
 };
+//lấy thông tin đánh giá
+const getRating = (req, res) => {
+  let query =
+    "select a.idDanhGia, a.soSao, a.moTa, c.hoTen, c.email, c.anh from danhGia a join nguoiDung c on a.idNguoiDung = c.idNguoiDung";
+
+  connection.execute(query, (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+};
 
 module.exports = {
   getNhahang,
   addNhahang,
   updateNhahang,
+  getRating,
 };

@@ -10,7 +10,7 @@ const ChangeInfoController = require("../controller/ChangeInfoController");
 const Nhahangcontroller = require("../controller/Nhahangcontroller");
 const Login = require("../controller/Login");
 const register = require("../controller/Register");
-const GioHangController = require('../controller/GioHangController');
+const GioHangController = require("../controller/GioHangController");
 
 const hoadonRoutes = require("../service/hoadonRoutes");
 
@@ -32,12 +32,12 @@ const initRouter = (app) => {
   router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
   router.get("/monanId/:id", MonAnController.getFoodById);
-  // lấy đánh giá
-  router.get("/rating", MonAnController.getRating);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  //lấy thông tin người dùng theo email
   router.get("/user/:email", userController.getUserByEmail);
-
+  //lấy toàn bộ đánh giá của người dùng
+  router.get("/rating", Nhahangcontroller.getRating);
   // Lấy thông tin món ăn
   router.get("/getInfor", GioHangController.getInfor);
 
@@ -65,7 +65,6 @@ const initRouter = (app) => {
   router.post("/register", Register.postRegister);
 
   app.use("/hoadon", hoadonRoutes);
-
 
   return app.use("/", router);
 };
