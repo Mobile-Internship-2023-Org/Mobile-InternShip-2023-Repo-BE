@@ -4,7 +4,7 @@ import connection from "../config/connecttion";
 const getInfor = (req, res) => {
   console.log("get infor");
   connection.query(
-    "select a.soLuong, b.anh, b.ten, b.giaBan from giohang_monan a join monAn b on a.idMonAn = b.idMonAn",
+    "select a.soLuong, b.anh, b.ten, b.giaBan from giohang_monan a join monan b on a.idMonAn = b.idMonAn",
     (err, result) => {
       if (err) throw err;
       return res.send(result);

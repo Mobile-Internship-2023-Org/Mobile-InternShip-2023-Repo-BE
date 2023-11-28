@@ -104,7 +104,7 @@ const deleteFood = (req, res) => {
 const getAllFood = (req, res) => {
   console.log("get all");
   connection.query(
-    "select a.*, b.tenTheLoai from monAn a join theLoai b on a.idTheLoai = b.idTheLoai",
+    "select a.*, b.tenTheLoai from monan a join theloai b on a.idTheLoai = b.idTheLoai",
     (err, result) => {
       if (err) throw err;
       return res.send(result);
@@ -127,7 +127,7 @@ const getFoodById = (req, res) => {
 //lấy các món ăn theo thể loại
 const getFoodByType = (req, res) => {
   console.log("get type");
-  let query = `SELECT a.*, b.tenTheLoai FROM monAn a JOIN theLoai b ON a.idTheLoai=b.idTheLoai
+  let query = `SELECT a.*, b.tenTheLoai FROM monan a JOIN theloai b ON a.idTheLoai=b.idTheLoai
     WHERE b.idTheLoai LIKE '%${req.params.type}%' and a.idMonAn NOT IN ('%${req.params.id}%')`;
   connection.query(query, (err, result) => {
     if (err) throw err;
@@ -139,12 +139,12 @@ const getFoodByType = (req, res) => {
 const addToCart = (req, res) => {
   console.log(req.body);
   const { idMonAn, idNguoiDung, soLuong, trangThai } = req.body;
-  let queryInsert = `INSERT INTO gioHang_monan (idGioHang, soLuong, idMonAn) VALUES(?,?,?)`;
-  let queryInsertGioHang = `INSERT INTO gioHang (idNguoiDung, trangThai) VALUES(?, ?)`;
+  let queryInsert = `INSERT INTO giohang_monan (idGioHang, soLuong, idMonAn) VALUES(?,?,?)`;
+  let queryInsertGioHang = `INSERT INTO giohang (idNguoiDung, trangThai) VALUES(?, ?)`;
   let queryCheck =
-    "select a.*, b.idNguoiDung from giohang_monan a join gioHang b where a.idMonAn = ? and b.idNguoiDung = ? and b.trangThai = 1";
+    "select a.*, b.idNguoiDung from giohang_monan a join giohang b where a.idMonAn = ? and b.idNguoiDung = ? and b.trangThai = 1";
   let queryUpdate =
-    "update gioHang_monan set soLuong = soLuong + ? where idMonAn = ?";
+    "update giohang_monan set soLuong = soLuong + ? where idMonAn = ?";
   connection.execute(queryCheck, [idMonAn, idNguoiDung], (err, result) => {
     if (err) throw err;
     if (result.length == 0) {
