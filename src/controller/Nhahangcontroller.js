@@ -7,12 +7,12 @@ const getNhahang = (req, res) => {
   });
 };
 const addNhahang = async (req, res) => {
-  const { anh, ten, sdt, fanpage, diaChi } = req.body;
+  const { anh, ten, sdt, fanpage, diaChi, id } = req.body;
 
   try {
     const result = await queryAsync(
-      "INSERT INTO nhahang (anh, ten, sdt, fanpage, diaChi) VALUES (?, ?, ?, ?, ?)",
-      [anh, ten, sdt, fanpage, diaChi]
+      "INSERT INTO nhahang (anh, ten, sdt, fanpage, diaChi, id) VALUES (?, ?, ?, ?, ?, ?)",
+      [anh, ten, sdt, fanpage, diaChi, id]
     );
 
     console.log("Data inserted successfully");
@@ -24,23 +24,27 @@ const addNhahang = async (req, res) => {
 };
 
 const updateNhahang = (req, res) => {
-  const { anh, sdt, fanpage, diaChi, ten } = req.body;
-
+  const { anh, ten, sdt, fanpage, diaChi } = req.body;
   const sql =
-    "UPDATE nhahang SET anh=?, sdt=?, fanpage=?, diaChi=? WHERE ten=?";
+    "update nhahang set  anh =?,ten =?, sdt =?, fanpage =?, diaChi =?";
 
-  connection.query(sql, [anh, sdt, fanpage, diaChi, ten], (err, result) => {
+  connection.query(sql, [anh, ten, sdt, fanpage, diaChi], (err, result) => {
     if (err) {
       console.error("Error updating data:", err);
       return res.status(500).send("Error updating data");
     }
 
-    if (result.affectedRows === 0) {
-      // No rows were affected, meaning the restaurant with the given name does not exist
-      return res.status(404).send("Restaurant not found");
-    }
-
     return res.status(200).send("Data updated successfully");
+  });
+};
+//lấy thông tin đánh giá
+const getRating = (req, res) => {
+  let query =
+    "select a.idDanhGia, a.soSao, a.moTa, c.hoTen, c.email, c.anh from danhgia a join nguoidung c on a.idNguoiDung = c.idNguoiDung";
+
+  connection.execute(query, (err, result) => {
+    if (err) throw err;
+    res.send(result);
   });
 };
 
@@ -48,4 +52,5 @@ module.exports = {
   getNhahang,
   addNhahang,
   updateNhahang,
+  getRating,
 };

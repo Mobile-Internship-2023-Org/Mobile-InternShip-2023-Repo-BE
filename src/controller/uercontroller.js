@@ -1,16 +1,17 @@
 const conection = require("../config/connecttion");
 
 const getUser = (req, res) => {
-  conection.execute("select * from nguoiDung", (err, result) => {
+  conection.execute("select * from nguoidung", (err, result) => {
     if (err) throw err;
     res.send("ok");
   });
 };
 
+
 const getUserByEmail = (req, res) => {
   const email = req.params.email;
   conection.execute(
-    "select * from nguoiDung where email = ?",
+    "select * from nguoidung where email = ?",
     [email],
     (err, result) => {
       if (err) throw err;
@@ -19,6 +20,7 @@ const getUserByEmail = (req, res) => {
     }
   );
 };
+
 
 module.exports = {
   getUser,
