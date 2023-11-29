@@ -14,7 +14,7 @@ const postRegister = (req, res) => {
 
   // Kiểm tra email có bị trùng
   connection.query(
-    "SELECT COUNT(*) AS count FROM nguoiDung WHERE email = ?",
+    "SELECT COUNT(*) AS count FROM nguoidung WHERE email = ?",
     [Email],
     (err, selectResults) => {
       if (err) {
@@ -41,7 +41,7 @@ const postRegister = (req, res) => {
 
         // Chèn dữ liệu vào cơ sở dữ liệu
         connection.query(
-          "INSERT INTO nguoiDung (email, matKhau, role) VALUES (?, ?, ?)",
+          "INSERT INTO nguoidung (email, matKhau, role) VALUES (?, ?, ?)",
           [Email, hashedPassword, "user"],
           (err, insertResults) => {
             if (err) {

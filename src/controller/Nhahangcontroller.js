@@ -40,7 +40,7 @@ const updateNhahang = (req, res) => {
 //lấy thông tin đánh giá
 const getRating = (req, res) => {
   let query =
-    "select a.idDanhGia, a.soSao, a.moTa, c.hoTen, c.email, c.anh from danhGia a join nguoiDung c on a.idNguoiDung = c.idNguoiDung";
+    "select a.idDanhGia, a.soSao, a.moTa, c.hoTen, c.email, c.anh from danhgia a join nguoidung c on a.idNguoiDung = c.idNguoiDung";
 
   connection.execute(query, (err, result) => {
     if (err) throw err;
