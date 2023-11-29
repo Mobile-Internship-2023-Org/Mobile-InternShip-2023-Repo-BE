@@ -16,12 +16,15 @@ const hoadonRoutes = require("../service/hoadonRoutes");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const uploadFood = multer({dest: 'uploads/'});
 
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
 
+  // lấy danh sách loại món
+  router.get("/listTypeFood", MonAnController.listTypeFood);
   // thêm món ăn mới
-  router.post("/addFood", MonAnController.addFood);
+  router.post("/addFood", uploadFood.single('anh'), MonAnController.addFood);
   // cập nhật món ăn theo id
   router.put("/updateFood/:id", MonAnController.updateFood);
   // xóa món ăn theo id

@@ -18,7 +18,7 @@ if (useOnlineDatabase) {
     password: 'M4vQ9mDWYn',
     database: 'sql12664462',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 20,
     queueLimit: 0
   });
   databaseType = "online";
@@ -29,6 +29,7 @@ if (useOnlineDatabase) {
     user: "root",
     password: "",
     database: "foody",
+    connectionLimit: 20,
   });
   databaseType = "local";
 }
