@@ -1,40 +1,72 @@
 import connection from "../config/connecttion";
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
+
+const cloudinaryConfig = {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+};
+
+cloudinary.config(cloudinaryConfig);
 
 // Author: Hoàng
 // xử lý thêm món ăn, update món ăn, xóa món ăn
 
+// TODO: Lấy danh sách loại món ăn
+const listTypeFood = (req, res) => {
+  const query = "SELECT * FROM theloai";
+  connection.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).json({ err: "Không lấy được loại món ăn" });
+    }
+    res.status(200).json({ types: result });
+  });
+};
+
 // TODO: Thêm món ăn
 const addFood = (req, res) => {
-  const { anh, ten, giaBan, giaGiam, idTheLoai } = req.body;
+  const { ten, giaBan, giaGiam, idTheLoai } = req.body;
+  const { path } = req.file;
 
   //kiểm tra khi thiếu thông tin
-  if (!anh || !ten || !giaBan || !giaGiam || !idTheLoai) {
+  if (!path || !ten || !giaBan || !giaGiam || !idTheLoai) {
     return res.status(400).json({ error: "Thiếu thông tin." });
   }
+  if (isNaN(giaBan) || isNaN(giaGiam)) {
+    return res.status(400).json({error: "Giá không được nhập chữ"})
+  }
 
-  // truy vấn
-  const query = `INSERT INTO monan (anh, ten, giaBan, giaGiam, idTheLoai) VALUES (?,?,?,?,?)`;
-  //connect db
-  connection.query(
-    query,
-    [anh, ten, giaBan, giaGiam, idTheLoai],
-    (error, result) => {
-      if (error) {
-        return res.status(500).json({ error: "Lỗi thêm món ăn." });
-      }
-      const showFood = {
-        idMonAn: result.insertId,
-        anh,
-        ten,
-        giaBan,
-        giaGiam,
-        idTheLoai,
-      };
-      res
-        .status(200)
-        .json({ message: "Thêm món ăn thành công.", food: showFood }); // food: hiển thị dữ liệu vừa thêm
+  // tải ảnh lên Cloundinary
+  cloudinary.uploader.upload(path, (error, result) => {
+    if (error) {
+      return res.status(500).json({ err: "Lỗi tải ảnh lên" });
     }
-  );
+
+    // truy vấn
+    const query = `INSERT INTO monan (anh, ten, giaBan, giaGiam, idTheLoai) VALUES (?,?,?,?,?)`;
+    //connect db
+    connection.query(
+      query,
+      [result.secure_url, ten, giaBan, giaGiam, idTheLoai],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({ err: "Lỗi thêm món ăn." });
+        }
+        const showFood = {
+          idMonAn: result.insertId,
+          anh: result.secure_url,
+          ten,
+          giaBan,
+          giaGiam,
+          idTheLoai,
+        };
+        res
+          .status(200)
+          .json({ message: "Thêm món ăn thành công.", food: showFood }); // food: hiển thị dữ liệu vừa thêm
+      }
+    );
+  });
 };
 
 // TODO: Cập nhật món ăn
@@ -177,6 +209,7 @@ const addToCart = (req, res) => {
 };
 
 module.exports = {
+  listTypeFood,
   addFood,
   updateFood,
   deleteFood,
