@@ -21,7 +21,8 @@ const initRouter = (app) => {
   router.post("/addToCart", MonAnController.addToCart);
   //Lấy thông tin món ăn
   router.get("/getInfor",GioHangController.getInfor);
-
+  //Tìm kiếm món ăn
+  router.get("/seach",MonAnController.getFoodByNameRegex);
   // Lấy thông tin nhà hàng
   router.get("/nhahang", Nhahangcontroller.getNhahang);
   // thêm nhà hàng

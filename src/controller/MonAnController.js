@@ -56,10 +56,29 @@ const addToCart = (req, res) => {
   });
 };
 
+//tìm kiếm món ăn
+const getFoodByNameRegex = (req, res) => {
+  console.log("get name regex");
+
+  const searchTerm = req.query.ten ? req.query.ten.trim().toLowerCase() : "";
+
+  // Sử dụng biểu thức chính quy để tìm kiếm chính xác từ khóa
+  let query = "SELECT * FROM monan WHERE LOWER(ten) REGEXP ?";
+
+  connection.query(query, [`\\b${searchTerm}\\b`], (err, result) => {
+    if (err) throw err;
+
+    console.log("getFoodByNameRegex", result);
+    return res.send(result);
+  });
+};
+
+
 module.exports = {
   getAllFood,
   getFoodById,
   getFoodByType,
   getRating,
   addToCart,
+  getFoodByNameRegex,
 };
