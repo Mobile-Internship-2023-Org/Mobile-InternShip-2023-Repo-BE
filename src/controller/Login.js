@@ -8,7 +8,7 @@ const postLogIn = (req, res) => {
 
   // Lấy thông tin người dùng từ cơ sở dữ liệu
   connection.query(
-    "SELECT * FROM nguoiDung WHERE email = ?",
+    "SELECT * FROM nguoidung WHERE email = ?",
     [Email],
     (err, results) => {
       if (err) {
