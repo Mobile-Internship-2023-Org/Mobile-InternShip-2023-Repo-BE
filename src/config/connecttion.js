@@ -18,7 +18,7 @@ if (useOnlineDatabase) {
     password: 'M4vQ9mDWYn',
     database: 'sql12664462',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 20,
     queueLimit: 0
   });
   databaseType = "online";
@@ -34,6 +34,8 @@ if (useOnlineDatabase) {
 }
 
 const initializeConnection = async () => {
+  let releaseConnection;
+
   try {
     // Measure time taken to initialzie the connection
     const startTime = performance.now();
@@ -49,6 +51,10 @@ const initializeConnection = async () => {
   } catch (error) {
     console.error("Lỗi khi kết nối đến cơ sở dữ liệu:", error);
     throw error;
+  } finally {
+    if (releaseConnection) {
+      releaseConnection();
+    }
   }
 };
 
