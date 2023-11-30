@@ -3,21 +3,12 @@ const router = express.Router();
 const hoadonController = require("../controller/hoadonController");
 
 // Create order
-router.post("/createOrder", hoadonController.createOrder);
-
-// Calculate total cost of an order
-router.post("/calculateTongTienHoaDon", hoadonController.calculateTongTienHoaDon);
-
-// Finalize an order
-router.post("/finalizeOrder", hoadonController.finalizeOrder);
-
-// Get order status
-router.get("/getOrderStatus/:idHoaDon", hoadonController.getOrderStatus);
-
-// Update order status
-router.put("/updateOrderStatus/:idHoaDon", hoadonController.updateOrderStatus);
-
-// Get total items in an order
-router.get("/getTotalItems/:idHoaDon", hoadonController.getTotalItems);
+router.get("/getNguoiDung/:id", hoadonController.getNguoiDung);
+router.get("/getMonanByNguoiDung/:id", hoadonController.getMonanByNguoiDung);
+router.get("/tongTienHoaDon/:id", hoadonController.tongTienHoaDon);
+router.post("/createHoadon/:id", hoadonController.createHoadon);
+router.get("/getHoadonById/:idHoaDon", hoadonController.getHoadonById);
+router.put('/updateTrangThai/:idHoaDon', hoadonController.updateTrangThaiHoadon);
+router.get("/getHoadonList/:idNguoiDung", hoadonController.getHoadonList);
 
 module.exports = router;
