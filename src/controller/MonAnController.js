@@ -34,7 +34,7 @@ const addFood = (req, res) => {
     return res.status(400).json({ error: "Thiếu thông tin." });
   }
   if (isNaN(giaBan) || isNaN(giaGiam)) {
-    return res.status(400).json({error: "Giá không được nhập chữ"})
+    return res.status(400).json({ error: "Giá không được nhập chữ" });
   }
 
   // tải ảnh lên Cloundinary
@@ -169,41 +169,70 @@ const getFoodByType = (req, res) => {
 
 // thêm món ăn vào giỏ hàng
 const addToCart = (req, res) => {
-  console.log(req.body);
-  const { idMonAn, idNguoiDung, soLuong, trangThai } = req.body;
-  let queryInsert = `INSERT INTO giohang_monan (idGioHang, soLuong, idMonAn) VALUES(?,?,?)`;
-  let queryInsertGioHang = `INSERT INTO giohang (idNguoiDung, trangThai) VALUES(?, ?)`;
-  let queryCheck =
-    "select a.*, b.idNguoiDung from giohang_monan a join giohang b where a.idMonAn = ? and b.idNguoiDung = ? and b.trangThai = 1";
-  let queryUpdate =
-    "update giohang_monan set soLuong = soLuong + ? where idMonAn = ?";
-  connection.execute(queryCheck, [idMonAn, idNguoiDung], (err, result) => {
-    if (err) throw err;
-    if (result.length == 0) {
-      connection.query(
-        queryInsertGioHang,
-        [idNguoiDung, trangThai],
-        (err, result) => {
-          if (err) throw err;
-          console.log("them thanh cong");
-          let lastInsertedId = result.insertId;
+  const { idMonAn, idNguoiDung, soLuong } = req.body;
+
+  const queryInsertGioHang = `INSERT INTO giohang (idNguoiDung, trangThai) VALUES (?, ?)`;
+  const queryCheckGioHang = `SELECT idGioHang FROM giohang WHERE idNguoiDung = ? AND trangThai = 1`;
+  const queryCheck = `SELECT * FROM giohang_monan WHERE idMonAn = ?`;
+  const queryUpdate = `UPDATE giohang_monan SET soLuong = soLuong + ? WHERE idMonAn = ?`;
+  const queryInsert = `INSERT INTO giohang_monan (idGioHang, soLuong, idMonAn) VALUES (?, ?, ?)`;
+
+  connection.execute(queryCheckGioHang, [idNguoiDung], (err, result) => {
+    if (err) {
+      throw err;
+    }
+
+    if (result.length === 1) {
+      const id = result[0].idGioHang;
+      connection.query(queryCheck, [idMonAn], (err, result) => {
+        if (err) {
+          throw err;
+        }
+
+        console.log("Thêm thành công");
+
+        if (result.length === 1) {
+          connection.execute(queryUpdate, [soLuong, idMonAn], (err, result) => {
+            if (err) {
+              throw err;
+            }
+            return res.status(200).json({ message: "success", data: result });
+          });
+        } else {
           connection.execute(
             queryInsert,
-            [lastInsertedId, soLuong, idMonAn],
+            [id, soLuong, idMonAn],
             (err, result) => {
-              if (err) throw err;
-              return res.status(200).end();
+              if (err) {
+                throw err;
+              }
+              res.status(200).json({ message: "thành công", data: result });
+            }
+          );
+        }
+      });
+    } else {
+      console.log(result);
+      connection.execute(
+        queryInsertGioHang,
+        [idNguoiDung, 1],
+        (err, result) => {
+          if (err) {
+            throw err;
+          }
+          const insertID = result.insertId;
+          connection.execute(
+            queryInsert,
+            [insertID, soLuong, idMonAn],
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+              res.status(200).json({ message: "thành công", data: results });
             }
           );
         }
       );
-    } else {
-      console.log(result);
-      connection.execute(queryUpdate, [soLuong, idMonAn], (err, result) => {
-        if (err) throw err;
-        console.log("cap nhat");
-        return res.status(200).end();
-      });
     }
   });
 };
