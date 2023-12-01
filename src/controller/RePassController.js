@@ -8,7 +8,7 @@ const changePassword = (userId, newPassword) => {
         return;
       }
   
-      const updateQuery = 'UPDATE users SET password = ? WHERE id = ?';
+      const updateQuery = 'UPDATE nguoidung SET password = ? WHERE id = ?';
   
       connection.query(updateQuery, [hashedPassword, userId], (error, results) => {
         if (error) {
