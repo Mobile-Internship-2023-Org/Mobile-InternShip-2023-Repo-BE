@@ -4,7 +4,7 @@ const multer = require("multer");
 
 const userController = require("../controller/uercontroller");
 
-const hoadonController = require("../controller/hoadonController");
+const hoadonController = require("../controller/hoaDonController");
 const MonAnController = require("../controller/MonAnController");
 const ChangeInfoController = require("../controller/ChangeInfoController");
 const Nhahangcontroller = require("../controller/Nhahangcontroller");
@@ -16,7 +16,7 @@ const hoadonRoutes = require("../service/hoadonRoutes");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const uploadFood = multer({dest: 'uploads/'});
+const uploadFood = multer({ dest: "uploads/" });
 
 const initRouter = (app) => {
   router.get("/user", userController.getUser);
@@ -24,9 +24,13 @@ const initRouter = (app) => {
   // lấy danh sách loại món
   router.get("/listTypeFood", MonAnController.listTypeFood);
   // thêm món ăn mới
-  router.post("/addFood", uploadFood.single('anh'), MonAnController.addFood);
+  router.post("/addFood", uploadFood.single("anh"), MonAnController.addFood);
   // cập nhật món ăn theo id
-  router.put("/updateFood/:idMonAn", uploadFood.single('anh'), MonAnController.updateFood);
+  router.put(
+    "/updateFood/:idMonAn",
+    uploadFood.single("anh"),
+    MonAnController.updateFood
+  );
   // xóa món ăn theo id
   router.put("/deleteFood/:idMonAn", MonAnController.deleteFood);
   //lấy mon an
@@ -58,14 +62,16 @@ const initRouter = (app) => {
   // lấy tất cả thông tin người dùng
   router.get("/nguoidung", ChangeInfoController.getAllInfoUser);
   // lấy dữ liệu người dùng theo email
-  router.get("/:email", ChangeInfoController.getUserByEmail);
+  router.get("/user/:email", ChangeInfoController.getUserByEmail);
   // cập nhật người dùng theo email
-  router.get("/updateUser", ChangeInfoController.updateUserByEmail);
+  router.post("/user/:email", ChangeInfoController.updateUserByEmail);
 
   //Login
   router.post("/login", Login.postLogIn);
   //Rgister
   router.post("/register", Register.postRegister);
+  //lấy món ăn theo giỏ hàng
+  router.get("/monan/:idGioHang");
 
   app.use("/hoadon", hoadonRoutes);
 

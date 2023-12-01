@@ -133,30 +133,32 @@ const updateFood = (req, res) => {
   function performUpdate() {
     // kiểm tra nếu không có trường nào được cập nhật
     if (updateFields.length === 0) {
-      return res.status(400).json({ error: "Không có trường nào được cập nhật" });
+      return res
+        .status(400)
+        .json({ error: "Không có trường nào được cập nhật" });
     }
 
     // tạo câu truy vấn cập nhật cuối cùng
-    const query = `UPDATE monan SET ${updateFields.join(', ')} WHERE idMonAn = ?`;
+    const query = `UPDATE monan SET ${updateFields.join(
+      ", "
+    )} WHERE idMonAn = ?`;
 
     // thực hiện truy vấn cập nhật
-    connection.query(
-      query,
-      [...updateValues, idMonAn],
-      (err, result) => {
-        console.log("Error: " + err);
-        console.log("result: " + result);
-        if (err) {
-          return res.status(500).json({ error: "Lỗi cập nhật món ăn." });
-        }
-
-        if (result.affectedRows === 0) {
-          return res.status(404).json({ error: "Không tìm thấy món ăn để cập nhật" });
-        }
-
-        res.status(200).json({ message: "Cập nhật món ăn thành công." });
+    connection.query(query, [...updateValues, idMonAn], (err, result) => {
+      console.log("Error: " + err);
+      console.log("result: " + result);
+      if (err) {
+        return res.status(500).json({ error: "Lỗi cập nhật món ăn." });
       }
-    );
+
+      if (result.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ error: "Không tìm thấy món ăn để cập nhật" });
+      }
+
+      res.status(200).json({ message: "Cập nhật món ăn thành công." });
+    });
   }
 };
 
@@ -189,7 +191,7 @@ const deleteFood = (req, res) => {
 const getAllFood = (req, res) => {
   console.log("get all");
   connection.query(
-    "select a.*, b.tenTheLoai from monan a join theloai b on a.idTheLoai = b.idTheLoai",
+    "select a.*, b.tenTheLoai from monan a join theloai b on a.idTheLoai = b.idTheLoai where a.isHidden = 0",
     (err, result) => {
       if (err) throw err;
       return res.send(result);
@@ -213,7 +215,7 @@ const getFoodById = (req, res) => {
 const getFoodByType = (req, res) => {
   console.log("get type");
   let query = `SELECT a.*, b.tenTheLoai FROM monan a JOIN theloai b ON a.idTheLoai=b.idTheLoai
-    WHERE b.idTheLoai LIKE '%${req.params.type}%' and a.idMonAn NOT IN ('%${req.params.id}%')`;
+    WHERE b.idTheLoai LIKE '%${req.params.type}%' and a.idMonAn NOT IN ('%${req.params.id}%') and isHidden = 0`;
   connection.query(query, (err, result) => {
     if (err) throw err;
     return res.send(result);
@@ -268,7 +270,7 @@ const addToCart = (req, res) => {
       console.log(result);
       connection.execute(
         queryInsertGioHang,
-        [idNguoiDung, 1],
+        [idNguoiDung, 0],
         (err, result) => {
           if (err) {
             throw err;
