@@ -28,7 +28,7 @@ const initRouter = (app) => {
   // cập nhật món ăn theo id
   router.put("/updateFood/:idMonAn", uploadFood.single('anh'), MonAnController.updateFood);
   // xóa món ăn theo id
-  router.delete("/deleteFood/:id", MonAnController.deleteFood);
+  router.put("/deleteFood/:idMonAn", MonAnController.deleteFood);
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
   //lấy món ăn theo thể loại

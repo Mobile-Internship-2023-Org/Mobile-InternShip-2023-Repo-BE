@@ -162,7 +162,7 @@ const updateFood = (req, res) => {
 
 // TODO: Xóa món ăn
 const deleteFood = (req, res) => {
-  const idMonAn = req.params.id;
+  const idMonAn = req.params.idMonAn;
 
   // kiểm tra id
   if (!idMonAn) {
@@ -170,11 +170,13 @@ const deleteFood = (req, res) => {
   }
 
   // truy vấn
-  const query = `DELETE FROM monan WHERE idMonAn=?`;
-  //connect db
+  const query = `UPDATE monan SET isHidden = true WHERE idMonAn=?`;
+
+  // connect db
   connection.query(query, [idMonAn], (error, result) => {
     if (error) {
-      return res.status(500).json({ error: "Không thể xóa." });
+      console.log(error);
+      return res.status(500).json({ error: "Không thể xóa món ăn." });
     }
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Món ăn không tồn tại." });
