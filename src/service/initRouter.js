@@ -35,6 +35,8 @@ const initRouter = (app) => {
   router.put("/deleteFood/:idMonAn", MonAnController.deleteFood);
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
+  // tìm kiếm
+  router.get("/search",MonAnController.getFoodByNameRegex);
   //lấy món ăn theo thể loại
   router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
