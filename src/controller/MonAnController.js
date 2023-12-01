@@ -11,7 +11,7 @@ const cloudinaryConfig = {
 cloudinary.config(cloudinaryConfig);
 
 // Author: Hoàng
-// xử lý thêm món ăn, update món ăn, xóa món ăn
+// xử lý lấy danh sách loại món ăn, thêm món ăn, cập nhật món ăn, xóa món ăn
 
 // TODO: Lấy danh sách loại món ăn
 const listTypeFood = (req, res) => {
@@ -69,49 +69,100 @@ const addFood = (req, res) => {
   });
 };
 
-// TODO: Cập nhật món ăn
+// TODO: Cập nhật thông tin món ăn theo ID
 const updateFood = (req, res) => {
-  const { anh, ten, giaBan, giaGiam, idTheLoai } = req.body;
-  const idMonAn = req.params.id;
+  const { idMonAn } = req.params; // assuming idMonAn is passed as a URL parameter
+  const { ten, giaBan, giaGiam, idTheLoai } = req.body;
+  const { file } = req;
 
-  //kiểm tra khi thiếu thông tin
-  if (!idMonAn || !anh || !ten || !giaBan || !giaGiam || !idTheLoai) {
-    return res.status(400).json({ error: "Thiếu thông tin." });
+  // kiểm tra khi thiếu thông tin
+  if (!idMonAn) {
+    return res.status(400).json({ error: "Thiếu ID món ăn." });
   }
 
-  // truy vấn
-  const query = `UPDATE monan SET anh=?, ten=?, giaBan=?, giaGiam=?, idTheLoai=? WHERE idMonAn=?`;
-  //connect db
-  connection.query(
-    query,
-    [anh, ten, giaBan, giaGiam, idTheLoai, idMonAn],
-    (error, result) => {
-      if (error) {
-        return res.status(500).json({ error: "Không thể cập nhật." });
-      }
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: "Món ăn không tồn tại." });
-      }
+  // tạo câu truy vấn cập nhật dựa trên các trường được cung cấp
+  let updateFields = [];
+  let updateValues = [];
 
-      const showUpdate = {
-        idMonAn,
-        anh,
-        ten,
-        giaBan,
-        giaGiam,
-        idTheLoai,
-      };
+  if (ten) {
+    updateFields.push("ten = ?");
+    updateValues.push(ten);
+  }
 
-      res
-        .status(200)
-        .json({ message: "Cập nhật món ăn thành công.", food: showUpdate });
+  if (giaBan) {
+    if (isNaN(giaBan)) {
+      return res.status(400).json({ error: "Giá bán không được nhập chữ" });
     }
-  );
+    updateFields.push("giaBan = ?");
+    updateValues.push(giaBan);
+  }
+
+  if (giaGiam) {
+    if (isNaN(giaGiam)) {
+      return res.status(400).json({ error: "Giá giảm không được nhập chữ" });
+    }
+    updateFields.push("giaGiam = ?");
+    updateValues.push(giaGiam);
+  }
+
+  if (idTheLoai) {
+    updateFields.push("idTheLoai = ?");
+    updateValues.push(idTheLoai);
+  }
+
+  // kiểm tra nếu có ảnh được cung cấp
+  if (file && file.path) {
+    // tải ảnh lên Cloudinary
+    cloudinary.uploader.upload(file.path, (error, result) => {
+      if (error) {
+        return res.status(500).json({ err: "Lỗi tải ảnh lên" });
+      }
+
+      updateFields.push("anh = ?");
+      updateValues.push(result.secure_url);
+
+      // gọi hàm thực hiện cập nhật
+      performUpdate();
+    });
+  } else {
+    // không có ảnh được cung cấp, gọi hàm thực hiện cập nhật ngay
+    performUpdate();
+  }
+
+  // hàm thực hiện cập nhật trong trường hợp không có lỗi ảnh
+  function performUpdate() {
+    // kiểm tra nếu không có trường nào được cập nhật
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: "Không có trường nào được cập nhật" });
+    }
+
+    // tạo câu truy vấn cập nhật cuối cùng
+    const query = `UPDATE monan SET ${updateFields.join(', ')} WHERE idMonAn = ?`;
+
+    // thực hiện truy vấn cập nhật
+    connection.query(
+      query,
+      [...updateValues, idMonAn],
+      (err, result) => {
+        console.log("Error: " + err);
+        console.log("result: " + result);
+        if (err) {
+          return res.status(500).json({ error: "Lỗi cập nhật món ăn." });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: "Không tìm thấy món ăn để cập nhật" });
+        }
+
+        res.status(200).json({ message: "Cập nhật món ăn thành công." });
+      }
+    );
+  }
 };
 
 // TODO: Xóa món ăn
 const deleteFood = (req, res) => {
-  const idMonAn = req.params.id;
+  const idMonAn = req.params.idMonAn;
 
   // kiểm tra id
   if (!idMonAn) {
@@ -119,11 +170,13 @@ const deleteFood = (req, res) => {
   }
 
   // truy vấn
-  const query = `DELETE FROM monan WHERE idMonAn=?`;
-  //connect db
+  const query = `UPDATE monan SET isHidden = true WHERE idMonAn=?`;
+
+  // connect db
   connection.query(query, [idMonAn], (error, result) => {
     if (error) {
-      return res.status(500).json({ error: "Không thể xóa." });
+      console.log(error);
+      return res.status(500).json({ error: "Không thể xóa món ăn." });
     }
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Món ăn không tồn tại." });
