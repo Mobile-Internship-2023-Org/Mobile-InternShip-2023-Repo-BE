@@ -11,7 +11,7 @@ const Nhahangcontroller = require("../controller/Nhahangcontroller");
 const Login = require("../controller/Login");
 const Register = require("../controller/Register");
 const GioHangController = require("../controller/GioHangController");
-
+const RatingController = require("../controller/RatingController");
 const hoadonRoutes = require("../service/hoadonRoutes");
 
 const storage = multer.memoryStorage();
@@ -76,7 +76,18 @@ const initRouter = (app) => {
   router.get("/monan/:idGioHang");
 
   app.use("/hoadon", hoadonRoutes);
-
+  // lấy tất cả đánh giá 
+  app.use("/reviews",RatingController.getAllReviews);
+  // Gọi đánh giá theo id
+  app.use("/reviews/:id",RatingController.getReviewById);
+  // Thêm đánh giá
+  app.use("/addreview",RatingController.addReview);
+  // 
+  app.use("/reviews/:id",RatingController.getReviewById);
+  // xóa đánh giá
+  app.use("/delete/:id",RatingController.deleteReview);
+  // update đánh giá
+  app.use("/update/:id",RatingController.updateReview);
   return app.use("/", router);
 };
 
