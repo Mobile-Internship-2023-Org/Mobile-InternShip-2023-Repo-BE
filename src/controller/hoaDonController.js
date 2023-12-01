@@ -35,6 +35,34 @@ const getNguoiDung = (req, res) => {
   });
 };
 
+const getIdGioHang = (req, res) => {
+  const idNguoiDung = req.params.id;
+
+  // Query to get the associated giohang with trangThai of '0' for the user
+  const giohangQuery = 'SELECT idGioHang FROM giohang WHERE idNguoiDung = ? AND trangThai = 0';
+
+  connection.query(giohangQuery, [idNguoiDung], (error, results) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: 'Internal server error' });
+    } else {
+      if (results.length === 0) {
+        // No matching giohang found
+        res.json({ idGioHang: null });
+      } else {
+        // Get the ID of the found giohang
+        const idGioHang = results[0].idGioHang;
+
+        // Send the idGioHang as a JSON response
+        res.json({ idGioHang });
+
+        console.log('idGioHang:', idGioHang);
+      }
+    }
+  });
+};
+
 // API to get associated giohang with trangThai of '0' and return list of all monan with soLuong
 const getMonanByNguoiDung = (req, res) => {
   const userId = req.params.id;
@@ -175,9 +203,8 @@ const getHoadonById = (req, res) => {
         // Map trangThai to its corresponding string
         const trangThaiMapping = {
           1: 'Đã đặt',
-          2: 'Đang chuẩn bị',
-          3: 'Đang giao hàng',
-          4: 'Đã hoàn thành',
+          2: 'Đang giao hàng',
+          3: 'Đã hoàn thành',
         };
 
         // Get the string representation of trangThai
@@ -253,22 +280,77 @@ const getTrangThaiString = (trangThai) => {
     case 1:
       return 'Đã đặt';
     case 2:
-      return 'Đang chuẩn bị';
-    case 3:
       return 'Đang giao hàng';
-    case 4:
+    case 3:
       return 'Đã hoàn thành';
     default:
       return 'Trạng thái không xác định';
   }
 };
 
+// API to get info of a nguoidung using email
+const getNguoiDungByEmail = (req, res) => {
+  // Extract email from request parameters
+  const email = req.params.email;
+
+  // Query to get information of a nguoidung based on email
+  const query = 'SELECT * FROM nguoidung WHERE email = ?';
+
+  // Execute the query
+  connection.query(query, [email], (error, results) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: 'Lỗi nội bộ của server' });
+    } else {
+      // Check if there is a user with the provided email
+      if (results.length === 0) {
+        // User not found response
+        res.status(404).json({ error: 'Không tìm thấy người dùng với email này' });
+      } else {
+        // Success response with information of the nguoidung
+        const nguoidungInfo = results[0];
+        res.json(nguoidungInfo);
+      }
+    }
+  });
+};
+
+const completeGioHang = (req, res) => {
+  const idGioHang = req.params.id;
+
+  // Query to update trangThai of the specified giohang
+  const giohangQuery = 'UPDATE giohang SET trangThai = 1 WHERE idGioHang = ?';
+
+  connection.query(giohangQuery, [idGioHang], (error, results) => {
+      if (error) {
+          console.error(error);
+          // Error response
+          res.status(500).json({ error: 'Internal server error' });
+      } else {
+          if (results.affectedRows === 0) {
+              // No matching giohang found or trangThai already set to '1'
+              res.json({ success: false, message: 'No matching giohang found or trangThai already set to 1' });
+          } else {
+              // Successfully updated trangThai to '1'
+              res.json({ success: true, message: 'Giohang trangThai updated to 1' });
+
+              // You can log the success or handle it as needed
+              console.log('Giohang trangThai updated to 1');
+          }
+      }
+  });
+};
+
 module.exports = {
   getNguoiDung,
+  getIdGioHang,
   getMonanByNguoiDung,
   tongTienHoaDon,
   createHoadon,
   getHoadonById,
   updateTrangThaiHoadon,
   getHoadonList,
+  getNguoiDungByEmail,
+  completeGioHang
 };
