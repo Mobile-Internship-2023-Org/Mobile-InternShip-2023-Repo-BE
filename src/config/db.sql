@@ -263,6 +263,12 @@ ALTER TABLE `monan`
   ADD KEY `idTheLoai` (`idTheLoai`);
 
 --
+-- Indexes for table `monan`
+--
+ALTER TABLE `monan` 
+  ADD COLUMN `isHidden` BOOLEAN DEFAULT false;
+
+--
 -- Indexes for table `nguoidung`
 --
 ALTER TABLE `nguoidung`

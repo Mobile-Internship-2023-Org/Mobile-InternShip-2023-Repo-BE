@@ -1,23 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const hoadonController = require("../controller/hoadonController");
+const hoadonController = require("../controller/hoaDonController");
 
 // Create order
-router.post("/createOrder", hoadonController.createOrder);
-
-// Calculate total cost of an order
-router.post("/calculateTongTienHoaDon", hoadonController.calculateTongTienHoaDon);
-
-// Finalize an order
-router.post("/finalizeOrder", hoadonController.finalizeOrder);
-
-// Get order status
-router.get("/getOrderStatus/:idHoaDon", hoadonController.getOrderStatus);
-
-// Update order status
-router.put("/updateOrderStatus/:idHoaDon", hoadonController.updateOrderStatus);
-
-// Get total items in an order
-router.get("/getTotalItems/:idHoaDon", hoadonController.getTotalItems);
+router.get("/getNguoiDung/:id", hoadonController.getNguoiDung);
+router.get("/getIdGioHang/:id", hoadonController.getIdGioHang);
+router.get("/getMonanByNguoiDung/:id", hoadonController.getMonanByNguoiDung);
+router.get("/tongTienHoaDon/:id", hoadonController.tongTienHoaDon);
+router.post("/createHoadon/:id", hoadonController.createHoadon);
+router.get("/getHoadonById/:idHoaDon", hoadonController.getHoadonById);
+router.put(
+  "/updateTrangThai/:idHoaDon/:trangThai",
+  hoadonController.updateTrangThaiHoadon
+);
+router.get("/getHoadonList/:email", hoadonController.getHoadonList);
+router.get("/getNguoiDungByEmail/:email", hoadonController.getNguoiDungByEmail);
+router.put("/completeGioHang/:id", hoadonController.completeGioHang);
+router.get("/monan/:id", hoadonController.getMonAnByIdGioHang);
+router.get("/getHoaDonListAll", hoadonController.getHoadonListAll);
 
 module.exports = router;

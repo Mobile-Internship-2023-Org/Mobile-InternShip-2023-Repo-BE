@@ -1,225 +1,441 @@
 import connection from "../config/connecttion";
 
-const createOrder = (req, res) => {
-  try {
-    // Extract necessary data from the request body
-    const { idNguoiDung, idGioHang } = req.body;
+// API to get nguoidung's info by id
+const getNguoiDung = (req, res) => {
+  const userId = req.params.id;
 
-    // Calculate the current time as ngayDat
-    const ngayDat = new Date();
+  // Query to get information about a user based on their ID
+  const query = "SELECT * FROM nguoidung WHERE idNguoiDung = ?";
 
-    // Insert a new hoadon record into the database
-    const insertQuery = `
-      INSERT INTO hoadon (idGioHang, idNguoiDung, ngayDat, trangThai)
-      VALUES (?, ?, ?, 1)
-    `;
-    
-    // Execute the query
-    connection.execute(insertQuery, [idGioHang, idNguoiDung, ngayDat], (err, result) => {
-      if (err) {
-        console.error("Error creating new hoadon:", err);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
-      }
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
 
-      // Return the newly created hoadon id
-      res.status(201).json({ message: "New hoadon created successfully", hoadonId: result.insertId });
-    });
-  } catch (error) {
-    console.error("Error in createOrder:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-const getOrderStatus = (req, res) => {
-  try {
-    // Extract the idHoaDon from the request parameters
-    const { idHoaDon } = req.params;
-
-    // Query to retrieve the trangThai (status) of the specified hoadon
-    const getStatusQuery = `
-      SELECT trangThai
-      FROM hoadon
-      WHERE idHoaDon = ?
-    `;
-
-    // Execute the query
-    connection.execute(getStatusQuery, [idHoaDon], (err, result) => {
-      if (err) {
-        console.error("Error retrieving hoadon status:", err);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
-      }
-
-      // Check if the idHoaDon exists in the database
-      if (result.length === 0) {
-        res.status(404).json({ error: "Hoadon not found" });
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Check if the user with the given ID exists
+      if (results.length === 0) {
+        // Error response
+        res.status(404).json({ error: "Không Tìm Thấy Người Dùng" });
       } else {
-        // Return the trangThai (status) of the hoadon as a string
-        const trangThai = getStatusString(result[0].trangThai);
-        res.status(200).json({ trangThai });
-      }
-    });
-  } catch (error) {
-    console.error("Error in getOrderStatus:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-const updateOrderStatus = (req, res) => {
-  try {
-    // Extract the idHoaDon and new trangThai from the request parameters
-    const { idHoaDon } = req.params;
-    const { newTrangThai } = req.body;
-
-    // Check if newTrangThai is a valid status code (1, 2, 3, or 4)
-    if (![1, 2, 3, 4].includes(newTrangThai)) {
-      res.status(400).json({ error: "Invalid status code. It should be 1, 2, 3, or 4." });
-      return;
-    }
-
-    // Update the trangThai of the specified hoadon
-    const updateStatusQuery = `
-      UPDATE hoadon
-      SET trangThai = ?
-      WHERE idHoaDon = ?
-    `;
-
-    // Execute the query
-    connection.execute(updateStatusQuery, [newTrangThai, idHoaDon], (err, result) => {
-      if (err) {
-        console.error("Error updating hoadon status:", err);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
-      }
-
-      // Check if the hoadonId exists in the database
-      if (result.affectedRows === 0) {
-        res.status(404).json({ error: "Hoadon not found" });
-      } else {
-        // Return a success message
-        res.status(200).json({ message: "Hoadon status updated successfully" });
-      }
-    });
-  } catch (error) {
-    console.error("Error in updateOrderStatus:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-
-// Function to map status codes to strings
-const getStatusString = (statusCode) => {
-  const statusMapping = {
-    1: 'Đã đặt đơn',
-    2: 'Đang chuẩn bị món ăn',
-    3: 'Đang giao',
-    4: 'Đã giao',
-  };
-
-  return statusMapping[statusCode] || 'Unknown Status';
-};
-
-const getTotalItems = (req, res) => {
-  try {
-    // Extract the idHoaDon from the request parameters
-    const { idHoaDon } = req.params;
-
-    // Query to retrieve the amount, total amount, and price of monan connected to a giohang connected to the specified hoadon
-    const getTotalItemsQuery = `
-      SELECT m.idMonAn, m.ten AS tenMonAn, COUNT(g.idMonAn) AS amount, m.giaBan AS price
-      FROM giohang g
-      JOIN monan m ON g.idMonAn = m.idMonAn
-      WHERE g.idGioHang IN (
-        SELECT idGioHang
-        FROM hoadon
-        WHERE idHoaDon = ?
-      )
-      GROUP BY m.idMonAn
-    `;
-
-    // Execute the query
-    connection.execute(getTotalItemsQuery, [idHoaDon], (err, result) => {
-      if (err) {
-        console.error("Error retrieving total items:", err);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
-      }
-
-      // Check if the idHoaDon exists in the database
-      if (result.length === 0) {
-        res.status(404).json({ error: "Hoadon not found" });
-      } else {
-        // Calculate total amount and total price
-        const totalAmount = result.reduce((acc, item) => acc + item.amount, 0);
-        const totalPrice = result.reduce((acc, item) => acc + item.amount * item.price, 0);
-
-        // Return the total items
-        res.status(200).json({
-          totalAmount,
-          totalPrice,
-          items: result.map(item => `${item.amount}x ${item.tenMonAn} - ${item.price}`),
+        // JSON response
+        const userInfo = results[0];
+        res.json({
+          id: userInfo.idNguoiDung,
+          email: userInfo.email,
+          hoTen: userInfo.hoTen,
+          sdt: userInfo.sdt,
+          anh: userInfo.anh,
+          diaChi: userInfo.diaChi,
+          role: userInfo.role,
         });
       }
-    });
-  } catch (error) {
-    console.error("Error in getTotalItems:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-// API to calculate 'tongTienHoaDon'
-const calculateTongTienHoaDon = (req, res) => {
-  const { idGioHang } = req.body;
-
-  // Query to calculate the total cost (tongTienHoaDon) for the given giohang
-  const calculateQuery = `
-    SELECT SUM(m.giaBan) + 15000 AS tongTienHoaDon
-    FROM giohang g
-    JOIN monan m ON g.idMonAn = m.idMonAn
-    WHERE g.idGioHang = ?
-  `;
-
-  connection.execute(calculateQuery, [idGioHang], (err, result) => {
-    if (err) {
-      console.error("Error calculating tongTienHoaDon:", err);
-      res.status(500).send("Internal Server Error");
-      return;
     }
-
-    // Return the calculated tongTienHoaDon
-    res.status(200).json({ tongTienHoaDon: result[0].tongTienHoaDon });
   });
 };
 
-// API to finalize an order
-const finalizeOrder = (req, res) => {
-  const { hoadonId, diaChi, estimatedDeliveryTime } = req.body;
+const getIdGioHang = (req, res) => {
+  const idNguoiDung = req.params.id;
 
-  // Update the hoadon record with the final details
-  const updateQuery = `
-    UPDATE hoadon
-    SET diaChi = ?, trangThai = 2, thoiGianGiaoHangDuKien = ?
-    WHERE idHoaDon = ?
-  `;
+  // Query to get the associated giohang with trangThai of '0' for the user
+  const giohangQuery =
+    "SELECT idGioHang FROM giohang WHERE idNguoiDung = ? AND trangThai = 0";
 
-  connection.execute(updateQuery, [diaChi, estimatedDeliveryTime, hoadonId], (err) => {
-    if (err) {
-      console.error("Error finalizing order:", err);
-      res.status(500).send("Internal Server Error");
-      return;
+  connection.query(giohangQuery, [idNguoiDung], (error, results) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Internal server error" });
+    } else {
+      if (results.length === 0) {
+        // No matching giohang found
+        res.json({ idGioHang: null });
+      } else {
+        // Get the ID of the found giohang
+        const idGioHang = results[0].idGioHang;
+
+        // Send the idGioHang as a JSON response
+        res.json({ idGioHang });
+
+        console.log("idGioHang:", idGioHang);
+      }
     }
+  });
+};
 
-    // Return a success message
-    res.status(200).send("Order finalized successfully");
+// API to get associated giohang with trangThai of '0' and return list of all monan with soLuong
+const getMonanByNguoiDung = (req, res) => {
+  const userId = req.params.id;
+
+  // Query to get the associated giohang with trangThai of '0' for the user
+  const giohangQuery =
+    "SELECT * FROM giohang WHERE idNguoiDung = ? AND trangThai = 0";
+
+  connection.query(giohangQuery, [userId], (error, giohangResults) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      if (giohangResults.length === 0) {
+        // Error response
+        res.status(404).json({ error: "Không tìm thấy giỏ hàng" });
+      } else {
+        // Get the ID of the found giohang
+        const giohangId = giohangResults[0].idGioHang;
+
+        // Query to get all monan with soLuong associated with the found giohang
+        const monanQuery =
+          "SELECT monan.*, giohang_monan.soLuong FROM monan INNER JOIN giohang_monan ON monan.idMonAn = giohang_monan.idMonAn WHERE giohang_monan.idGioHang = ?";
+
+        connection.query(
+          monanQuery,
+          [giohangId],
+          (monanError, monanResults) => {
+            if (monanError) {
+              console.error(monanError);
+              // Error response
+              res.status(500).json({ error: "Lỗi nội bộ của server" });
+            } else {
+              // Send the list of monan with soLuong associated with the giohang as a JSON response
+              res.json(monanResults);
+
+              console.log("monanList:", monanResults);
+            }
+          }
+        );
+      }
+    }
+  });
+};
+
+const tongTienHoaDon = (req, res) => {
+  const userId = req.params.id;
+
+  // Query to get the associated giohang with trangThai of '0' for the user
+  const giohangQuery =
+    "SELECT * FROM giohang WHERE idNguoiDung = ? AND trangThai = 0";
+
+  connection.query(giohangQuery, [userId], (error, giohangResults) => {
+    if (error) {
+      console.error(error);
+      // Error eespond
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Check if gioahng exists
+      if (giohangResults.length === 0) {
+        // Error response
+        res.status(404).json({ error: "Không tìm thấy giỏ hàng" });
+      } else {
+        // Get the ID of the first found giohang
+        const giohangId = giohangResults[0].idGioHang;
+
+        // Query to get all monan with soLuong associated with the found giohang
+        const monanQuery =
+          "SELECT monan.*, giohang_monan.soLuong FROM monan INNER JOIN giohang_monan ON monan.idMonAn = giohang_monan.idMonAn WHERE giohang_monan.idGioHang = ?";
+
+        connection.query(
+          monanQuery,
+          [giohangId],
+          (monanError, monanResults) => {
+            if (monanError) {
+              console.error(monanError);
+              res.status(500).json({ error: "Lỗi nội bộ của server" });
+            } else {
+              // Calculate the total amount of the giohang
+              const totalAmount = monanResults.reduce((total, monan) => {
+                // Calculate the total for each monan based on soLuong and giaBan
+                const monanTotal = monan.soLuong * monan.giaBan;
+                return total + monanTotal;
+              }, 0);
+
+              // Add the shipping fee
+              const totalWithShipping = totalAmount + 15000;
+
+              // JSON response
+              res.json({ tongTien: totalWithShipping });
+              console.log("tongTienHoaDon:", totalWithShipping);
+            }
+          }
+        );
+      }
+    }
+  });
+};
+
+const createHoadon = (req, res) => {
+  const idNguoiDung = req.params.id;
+
+  // Calculate ngayDat as the current date time + 30 minutes
+  const ngayDat = new Date();
+  ngayDat.setMinutes(ngayDat.getMinutes() + 30);
+
+  const diaChi = req.body.diaChi;
+  const trangThai = "1";
+  const tongTienHoaDon = req.body.tongTienHoaDon;
+  const comment = req.body.comment;
+  const idGioHang = req.body.idGioHang;
+  const phuongThucTT = req.body.phuongThucTT;
+
+  // Query to insert a new hoadon
+  const insertHoadonQuery =
+    "INSERT INTO hoadon (idGioHang, idNguoiDung, ngayDat, diaChi, trangThai, tongTienHoaDon, comment, phuongThucTT) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  // Execute the insert hoadon query
+  connection.query(
+    insertHoadonQuery,
+    [
+      idGioHang,
+      idNguoiDung,
+      ngayDat,
+      diaChi,
+      trangThai,
+      tongTienHoaDon,
+      comment,
+      phuongThucTT,
+    ],
+    (insertError, insertResults) => {
+      if (insertError) {
+        console.error(insertError);
+        // Error response
+        res.status(500).json({ error: "Lỗi nội bộ của server" });
+      } else {
+        // Success response with inserted results
+        console.log("Inserted Hoadon:", insertResults);
+        res.json({ success: true });
+      }
+    }
+  );
+};
+
+const getHoadonById = (req, res) => {
+  const idHoaDon = req.params.idHoaDon;
+
+  // Query to get information about the hoadon by idHoaDon
+  const hoadonQuery =
+    "SELECT a.*, b.hoTen, b.sdt FROM hoadon a join nguoiDung b on a.idNguoiDung = b.idNguoiDung WHERE a.idHoaDon = ? ";
+
+  // Execute the hoadon query
+  connection.query(hoadonQuery, [idHoaDon], (error, hoadonResults) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Check if hoadon exists
+      if (hoadonResults.length === 0) {
+        // Error response
+        res.status(404).json({ error: "Không tìm thấy hoadon" });
+      } else {
+        // Map trangThai to its corresponding string
+        const trangThaiMapping = {
+          1: "Đã đặt",
+          2: "Đang giao hàng",
+          3: "Đã hoàn thành",
+          4: "Hủy đơn",
+        };
+
+        // Get the string representation of trangThai
+        const trangThaiString = trangThaiMapping[hoadonResults[0].trangThai];
+
+        // Include the string representation in the response
+        const hoadonInfo = { ...hoadonResults[0], trangThai: trangThaiString };
+
+        // Success response with hoadon information
+        res.json(hoadonInfo);
+        console.log("hoaDon:", hoadonInfo);
+      }
+    }
+  });
+};
+
+const updateTrangThaiHoadon = (req, res) => {
+  const idHoaDon = req.params.idHoaDon;
+  const newTrangThai = req.params.trangThai;
+
+  // Query to update the trangThai of the hoadon
+  const updateTrangThaiQuery =
+    "UPDATE hoadon SET trangThai = ? WHERE idHoaDon = ?";
+
+  // Execute the update trangThai query
+  connection.query(
+    updateTrangThaiQuery,
+    [newTrangThai, idHoaDon],
+    (error, updateResults) => {
+      if (error) {
+        console.error(error);
+        // Error response
+        res.status(500).json({ error: "Lỗi nội bộ của server" });
+      } else {
+        // Check if any rows were affected by the update
+        if (updateResults.affectedRows === 0) {
+          // Error response
+          res.status(404).json({ error: "Không tìm thấy hoadon" });
+        } else {
+          res.json({ success: true });
+        }
+      }
+    }
+  );
+};
+
+const getHoadonList = (req, res) => {
+  const idNguoiDung = req.params.email;
+
+  // Query to get all hoadon for the nguoidung
+  const hoadonQuery =
+    "SELECT a.* FROM hoadon a join nguoiDung b on a.idNguoiDung = b.idNguoiDung WHERE email = ? order by a.ngayDat DESC";
+
+  // Execute the hoadon query
+  connection.query(hoadonQuery, [idNguoiDung], (error, hoadonResults) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Success response with the list of hoadon
+      res.json(
+        hoadonResults.map((hoadon) => ({
+          idHoaDon: hoadon.idHoaDon,
+          ngayDat: hoadon.ngayDat,
+          diaChi: hoadon.diaChi,
+          trangThai: getTrangThaiString(hoadon.trangThai),
+          tongTienHoaDon: hoadon.tongTienHoaDon,
+          comment: hoadon.comment,
+          idGioHang: hoadon.idGioHang,
+          phuongThucTT: hoadon.phuongThucTT,
+        }))
+      );
+    }
+  });
+};
+
+// Helper function to map trangThai values to corresponding strings
+const getTrangThaiString = (trangThai) => {
+  switch (trangThai) {
+    case 1:
+      return "Đã đặt";
+    case 2:
+      return "Đang giao hàng";
+    case 3:
+      return "Đã hoàn thành";
+    case 4:
+      return "Hủy đơn";
+    default:
+      return "Trạng thái không xác định";
+  }
+};
+
+// API to get info of a nguoidung using email
+const getNguoiDungByEmail = (req, res) => {
+  // Extract email from request parameters
+  const email = req.params.email;
+
+  // Query to get information of a nguoidung based on email
+  const query = "SELECT * FROM nguoidung WHERE email = ?";
+
+  // Execute the query
+  connection.query(query, [email], (error, results) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Check if there is a user with the provided email
+      if (results.length === 0) {
+        // User not found response
+        res
+          .status(404)
+          .json({ error: "Không tìm thấy người dùng với email này" });
+      } else {
+        // Success response with information of the nguoidung
+        const nguoidungInfo = results[0];
+        res.json(nguoidungInfo);
+      }
+    }
+  });
+};
+
+const completeGioHang = (req, res) => {
+  const idGioHang = req.params.id;
+
+  // Query to update trangThai of the specified giohang
+  const giohangQuery = "UPDATE giohang SET trangThai = 1 WHERE idGioHang = ?";
+
+  connection.query(giohangQuery, [idGioHang], (error, results) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Internal server error" });
+    } else {
+      if (results.affectedRows === 0) {
+        // No matching giohang found or trangThai already set to '1'
+        res.json({
+          success: false,
+          message: "No matching giohang found or trangThai already set to 1",
+        });
+      } else {
+        // Successfully updated trangThai to '1'
+        res.json({ success: true, message: "Giohang trangThai updated to 1" });
+
+        // You can log the success or handle it as needed
+        console.log("Giohang trangThai updated to 1");
+      }
+    }
+  });
+};
+
+const getMonAnByIdGioHang = (req, res) => {
+  let id = req.params.id;
+  console.log(id);
+  let query =
+    "select c.ten, b.soLuong, c.giaBan from giohang a join giohang_monan b on a.idGioHang = b.idGioHang join monan c on b.idMonAn = c.idMonAn where a.idGioHang = ?";
+  connection.query(query, [id], (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+};
+
+const getHoadonListAll = (req, res) => {
+  // Query to get all hoadon for the nguoidung
+  const hoadonQuery = "SELECT a.* FROM hoadon a  order by a.ngayDat DESC";
+
+  // Execute the hoadon query
+  connection.query(hoadonQuery, (error, hoadonResults) => {
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: "Lỗi nội bộ của server" });
+    } else {
+      // Success response with the list of hoadon
+      res.json(
+        hoadonResults.map((hoadon) => ({
+          idHoaDon: hoadon.idHoaDon,
+          ngayDat: hoadon.ngayDat,
+          diaChi: hoadon.diaChi,
+          trangThai: getTrangThaiString(hoadon.trangThai),
+          tongTienHoaDon: hoadon.tongTienHoaDon,
+          comment: hoadon.comment,
+          idGioHang: hoadon.idGioHang,
+          phuongThucTT: hoadon.phuongThucTT,
+        }))
+      );
+    }
   });
 };
 
 module.exports = {
-  createOrder,
-  getOrderStatus,
-  updateOrderStatus,
-  getTotalItems,
-  calculateTongTienHoaDon,
-  finalizeOrder,
+  getNguoiDung,
+  getIdGioHang,
+  getMonanByNguoiDung,
+  tongTienHoaDon,
+  createHoadon,
+  getHoadonById,
+  updateTrangThaiHoadon,
+  getHoadonList,
+  getNguoiDungByEmail,
+  completeGioHang,
+  getMonAnByIdGioHang,
+  getHoadonListAll,
 };
