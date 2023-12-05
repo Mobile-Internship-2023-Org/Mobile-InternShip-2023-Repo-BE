@@ -29,3 +29,4 @@ const changePassword = (userId, newPassword) => {
   
   // Đóng kết nối sau khi hoàn tất công việc
   connection.end();
+  
