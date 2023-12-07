@@ -43,6 +43,9 @@ const initRouter = (app) => {
   router.get("/monanId/:id", MonAnController.getFoodById);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  
+  router.put("/updatePassword/:id", userController.updatePasswordById);
+
   //lấy thông tin người dùng theo email
   router.get("/user/:email", userController.getUserByEmail);
   //lấy toàn bộ đánh giá của người dùng
