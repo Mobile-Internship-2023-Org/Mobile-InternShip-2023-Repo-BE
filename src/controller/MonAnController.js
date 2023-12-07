@@ -227,8 +227,8 @@ const addToCart = (req, res) => {
   const { idMonAn, idNguoiDung, soLuong } = req.body;
 
   const queryInsertGioHang = `INSERT INTO giohang (idNguoiDung, trangThai) VALUES (?, ?)`;
-  const queryCheckGioHang = `SELECT idGioHang FROM giohang WHERE idNguoiDung = ? AND trangThai = 1`;
-  const queryCheck = `SELECT * FROM giohang_monan WHERE idMonAn = ?`;
+  const queryCheckGioHang = `SELECT idGioHang FROM giohang WHERE idNguoiDung = ? AND trangThai = 0`;
+  const queryCheck = `SELECT * FROM giohang_monan a JOIN giohang b on a.idGioHang = b.idGioHang  WHERE idMonAn = ? and trangThai = 0`;
   const queryUpdate = `UPDATE giohang_monan SET soLuong = soLuong + ? WHERE idMonAn = ?`;
   const queryInsert = `INSERT INTO giohang_monan (idGioHang, soLuong, idMonAn) VALUES (?, ?, ?)`;
 
@@ -245,6 +245,8 @@ const addToCart = (req, res) => {
         }
 
         console.log("Thêm thành công");
+        console.log(result);
+        console.log(result.length);
 
         if (result.length === 1) {
           connection.execute(queryUpdate, [soLuong, idMonAn], (err, result) => {
@@ -308,7 +310,6 @@ const getFoodByNameRegex = (req, res) => {
     return res.send(result);
   });
 };
-
 
 module.exports = {
   listTypeFood,

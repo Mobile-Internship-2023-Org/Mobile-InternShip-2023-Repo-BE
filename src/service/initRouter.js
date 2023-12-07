@@ -36,7 +36,7 @@ const initRouter = (app) => {
   //lấy mon an
   router.get("/monan", MonAnController.getAllFood);
   // tìm kiếm
-  router.get("/search",MonAnController.getFoodByNameRegex);
+  router.get("/search", MonAnController.getFoodByNameRegex);
   //lấy món ăn theo thể loại
   router.get("/monanType/:type/:id", MonAnController.getFoodByType);
   //lấy món ăn theo id
@@ -48,7 +48,7 @@ const initRouter = (app) => {
   //lấy toàn bộ đánh giá của người dùng
   router.get("/rating", Nhahangcontroller.getRating);
   // Lấy thông tin món ăn
-  router.get("/getInfor", GioHangController.getInfor);
+  router.get("/getInfor/:email", GioHangController.getInfor);
 
   // Lấy thông tin nhà hàng
   router.get("/nhahang", Nhahangcontroller.getNhahang);
@@ -76,18 +76,19 @@ const initRouter = (app) => {
   router.get("/monan/:idGioHang");
 
   app.use("/hoadon", hoadonRoutes);
-  // lấy tất cả đánh giá 
-  app.use("/reviews",RatingController.getAllReviews);
+  // lấy tất cả đánh giá
+  app.use("/reviews", RatingController.getAllReviews);
   // Gọi đánh giá theo id
-  app.use("/reviews/:id",RatingController.getReviewById);
+  app.use("/reviews/:id", RatingController.getReviewById);
   // Thêm đánh giá
-  app.use("/addreview",RatingController.addReview);
-  // 
-  app.use("/reviews/:id",RatingController.getReviewById);
+  app.use("/addreview", RatingController.addReview);
+  //
+  app.use("/reviews/:id", RatingController.getReviewById);
   // xóa đánh giá
-  app.use("/delete/:id",RatingController.deleteReview);
+  app.use("/delete/:id", RatingController.deleteReview);
   // update đánh giá
-  app.use("/update/:id",RatingController.updateReview);
+  app.use("/update/:id", RatingController.updateReview);
+
   return app.use("/", router);
 };
 
