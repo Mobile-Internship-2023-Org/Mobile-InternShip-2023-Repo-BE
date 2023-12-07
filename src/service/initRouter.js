@@ -16,6 +16,8 @@ const initRouter = (app) => {
   router.get("/rating", MonAnController.getRating);
   //thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
+  
+  router.put("/updatePassword/:id", userController.updatePasswordById);
 
   return app.use("/", router);
 };
