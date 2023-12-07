@@ -13,6 +13,7 @@ const Register = require("../controller/Register");
 const GioHangController = require("../controller/GioHangController");
 const RatingController = require("../controller/RatingController");
 const hoadonRoutes = require("../service/hoadonRoutes");
+const RePassword = require("../controller/RePassController");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -43,8 +44,8 @@ const initRouter = (app) => {
   router.get("/monanId/:id", MonAnController.getFoodById);
   // thêm món ăn vào giỏ hàng
   router.post("/addToCart", MonAnController.addToCart);
-  
-  router.put("/updatePassword/:id", userController.updatePasswordById);
+
+  //router.put("/updatePassword/:id", RePassword.updatePasswordById);
 
   //lấy thông tin người dùng theo email
   router.get("/user/:email", userController.getUserByEmail);
@@ -78,7 +79,7 @@ const initRouter = (app) => {
   //lấy món ăn theo giỏ hàng
   router.get("/monan/:idGioHang");
 
-  router.put("/updatePassword/:id", userController.updatePasswordById);
+  router.put("/updatePassword", RePassword.updatePasswordById);
 
   app.use("/hoadon", hoadonRoutes);
   // lấy tất cả đánh giá
@@ -95,8 +96,6 @@ const initRouter = (app) => {
   app.use("/update/:id", RatingController.updateReview);
 
   return app.use("/", router);
-
-  
 };
 
 export default initRouter;
