@@ -75,6 +75,8 @@ const initRouter = (app) => {
   //lấy món ăn theo giỏ hàng
   router.get("/monan/:idGioHang");
 
+  router.put("/updatePassword/:id", userController.updatePasswordById);
+
   app.use("/hoadon", hoadonRoutes);
   // lấy tất cả đánh giá 
   app.use("/reviews",RatingController.getAllReviews);
@@ -89,6 +91,8 @@ const initRouter = (app) => {
   // update đánh giá
   app.use("/update/:id",RatingController.updateReview);
   return app.use("/", router);
+
+  
 };
 
 export default initRouter;
