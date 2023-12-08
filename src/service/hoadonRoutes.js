@@ -19,4 +19,6 @@ router.put("/completeGioHang/:id", hoadonController.completeGioHang);
 router.get("/monan/:id", hoadonController.getMonAnByIdGioHang);
 router.get("/getHoaDonListAll", hoadonController.getHoadonListAll);
 
+// router.get("/getthongkeAll" , thongkeController.getDailyRevenue);
+
 module.exports = router;
