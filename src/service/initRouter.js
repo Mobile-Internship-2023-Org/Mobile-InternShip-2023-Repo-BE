@@ -15,6 +15,8 @@ const RatingController = require("../controller/RatingController");
 const hoadonRoutes = require("../service/hoadonRoutes");
 const RePassword = require("../controller/RePassController");
 
+const thongkeController = require("../controller/thongkeController");
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const uploadFood = multer({ dest: "uploads/" });
@@ -96,6 +98,12 @@ const initRouter = (app) => {
   app.use("/update/:id", RatingController.updateReview);
 
   return app.use("/", router);
+
+
+  // thongke 
+  router.get("/thongke",thongkeController.getDailyRevenue);
+
+
 };
 
 export default initRouter;
