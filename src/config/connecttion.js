@@ -29,6 +29,7 @@ if (useOnlineDatabase) {
     user: "root",
     password: "",
     database: "foody",
+    connectionLimit: 20,
   });
   databaseType = "local";
 }
