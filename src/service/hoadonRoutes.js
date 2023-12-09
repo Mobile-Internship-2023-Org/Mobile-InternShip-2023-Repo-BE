@@ -13,5 +13,6 @@ router.put('/updateTrangThai/:idHoaDon', hoadonController.updateTrangThaiHoadon)
 router.get("/getHoadonList/:idNguoiDung", hoadonController.getHoadonList);
 router.get("/getNguoiDungByEmail/:email", hoadonController.getNguoiDungByEmail);
 router.put('/completeGioHang/:id', hoadonController.completeGioHang);
+router.put('/updateNguoiDungInfo', hoadonController.updateNguoiDungInfo);
 
 module.exports = router;

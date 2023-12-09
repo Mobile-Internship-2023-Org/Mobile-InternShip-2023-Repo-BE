@@ -323,22 +323,42 @@ const completeGioHang = (req, res) => {
   const giohangQuery = 'UPDATE giohang SET trangThai = 1 WHERE idGioHang = ?';
 
   connection.query(giohangQuery, [idGioHang], (error, results) => {
-      if (error) {
-          console.error(error);
-          // Error response
-          res.status(500).json({ error: 'Internal server error' });
+    if (error) {
+      console.error(error);
+      // Error response
+      res.status(500).json({ error: 'Internal server error' });
+    } else {
+      if (results.affectedRows === 0) {
+        // No matching giohang found or trangThai already set to '1'
+        res.json({ success: false, message: 'No matching giohang found or trangThai already set to 1' });
       } else {
-          if (results.affectedRows === 0) {
-              // No matching giohang found or trangThai already set to '1'
-              res.json({ success: false, message: 'No matching giohang found or trangThai already set to 1' });
-          } else {
-              // Successfully updated trangThai to '1'
-              res.json({ success: true, message: 'Giohang trangThai updated to 1' });
+        // Successfully updated trangThai to '1'
+        res.json({ success: true, message: 'Giohang trangThai updated to 1' });
 
-              // You can log the success or handle it as needed
-              console.log('Giohang trangThai updated to 1');
-          }
+        // You can log the success or handle it as needed
+        console.log('Giohang trangThai updated to 1');
       }
+    }
+  });
+};
+
+// API to update 'hoTen' and 'sdt' of a nguoidung using email
+const updateNguoiDungInfo = (req, res) => {
+  const { email, hoTen, sdt } = req.body;
+
+  const query = 'UPDATE nguoidung SET hoTen = ?, sdt = ? WHERE email = ?';
+
+  connection.query(query, [hoTen, sdt, email], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Lỗi nội bộ của server' });
+    } else {
+      if (results.affectedRows === 0) {
+        res.status(404).json({ error: 'Không tìm thấy người dùng với email này' });
+      } else {
+        res.json({ message: 'Cập nhật thông tin người dùng thành công' });
+      }
+    }
   });
 };
 
@@ -352,5 +372,6 @@ module.exports = {
   updateTrangThaiHoadon,
   getHoadonList,
   getNguoiDungByEmail,
-  completeGioHang
+  completeGioHang,
+  updateNguoiDungInfo
 };
