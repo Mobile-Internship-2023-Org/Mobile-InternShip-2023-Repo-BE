@@ -15,6 +15,9 @@ router.put(
 );
 router.get("/getHoadonList/:email", hoadonController.getHoadonList);
 router.get("/getNguoiDungByEmail/:email", hoadonController.getNguoiDungByEmail);
+
+router.put('/completeGioHang/:id', hoadonController.completeGioHang);
+router.put('/updateNguoiDungInfo', hoadonController.updateNguoiDungInfo);
 router.put("/completeGioHang/:id", hoadonController.completeGioHang);
 router.get("/monan/:id", hoadonController.getMonAnByIdGioHang);
 router.get("/getHoaDonListAll", hoadonController.getHoadonListAll);
